@@ -1,4 +1,19 @@
 <?php
+/**
+ * Plugin mailer module.
+ *
+ * This module provides the mail send for the plugin.
+ *
+ * @package my-wordpress-plugin
+ * @subpackage Core
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+  exit;
+}
+
+
+
 namespace My_WP_Plugin\Includes\Email;
 
 class Mailer {

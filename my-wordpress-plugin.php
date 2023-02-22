@@ -4,7 +4,7 @@
  * Plugin URI: https://uscens.com/
  * Description: This is a WordPress plugin that adds various features to a WordPress website.
  * Version: 1.0.0
- * Author: Your Name
+ * Author: Joven Wang
  * Author URI: https://uscens.com/
  * License: GPL2
  */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Login Class
+ * Plugin login module.
  *
  * This class handles the customization of the WordPress login page.
  *

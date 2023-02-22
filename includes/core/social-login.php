@@ -1,6 +1,11 @@
 <?php
 /**
  * Plugin social login functionality.
+ *
+ * This module provides the social login functionality. for the plugin.
+ *
+ * @package my-wordpress-plugin
+ * @subpackage Core
  */
 
 // Exit if accessed directly.

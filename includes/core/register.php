@@ -1,4 +1,13 @@
 <?php
+/**
+ * Plugin user register module.
+ *
+ * This module provides the social login functionality. for the plugin.
+ *
+ * @package my-wordpress-plugin
+ * @subpackage Core
+ */
+
 // includes/core/register.php
 
 // 加载必要的文件

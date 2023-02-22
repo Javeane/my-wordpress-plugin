@@ -1,4 +1,16 @@
 <?php
+/**
+ * Plugin user Model.
+ *
+ * This module provides the user for the plugin.
+ *
+ * @package my-wordpress-plugin
+ * @subpackage Core
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+  exit;
+}
 
 class My_WordPress_Plugin_User {
 

@@ -1,4 +1,21 @@
 <?php
+/**
+ * Plugin Admin Page
+ *
+ * @package           my-wordpress-plugin
+ *
+ * Plugin Name:       My WordPress Plugin
+ * Plugin URI:        https://example.com/plugins/my-wordpress-plugin/
+ * Description:       A plugin to customize WordPress basic functionalities.
+ * Version:           1.0.0
+ * Requires at least: 5.2
+ * Requires PHP:      7.2
+ * Author:            Jevon Wang
+ * Author URI:        https://example.com/
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       my-wordpress-plugin
+ */
 // 安全校验
 defined('ABSPATH') or die('No script kiddies please!');
 

@@ -1,11 +1,11 @@
 <?php
-
 /**
  * Plugin verification module.
  *
  * This module provides the verification feature for the plugin.
  *
  * @package my-wordpress-plugin
+ * @subpackage Core
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -1,8 +1,11 @@
 <?php
 /**
- * My WordPress Plugin Email Verification Model
+ * Plugin Email Verification Model.
  *
- * @package MyWordPressPlugin
+ * This module provides the Email Verification.
+ *
+ * @package my-wordpress-plugin
+ * @subpackage Core
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
