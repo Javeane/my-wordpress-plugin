@@ -844,3 +844,73 @@ Remove custom avatar field attachment ID from user profile page.
 public function remove_custom_avatar_field_attachment_id( $user_id ) {
 delete_user_meta( $user_id, 'custom_avatar' );
 }
+
+//第七部分：配置验证功能的第三方 API 信息
+
+<?php
+// ...
+class My_WordPress_Plugin_Admin {
+
+    // ...
+
+    public function custom_verification_settings_callback() {
+        printf(
+            '<input type="text" id="verification_api_key" name="my_wordpress_plugin_options[verification_api_key]" value="%s" />',
+            isset( $this->options['verification_api_key'] ) ? esc_attr( $this->options['verification_api_key'] ) : ''
+        );
+    }
+
+    public function custom_verification_settings() {
+        add_settings_section(
+            'custom_verification_section', // ID.
+            'Custom Verification', // Title.
+            array( $this, 'custom_verification_section_callback' ), // Callback.
+            'custom_verification_settings' // Page.
+        );
+
+        add_settings_field(
+            'verification_api_key', // ID.
+            'Verification API Key', // Title.
+            array( $this, 'custom_verification_settings_callback' ), // Callback.
+            'custom_verification_settings', // Page.
+            'custom_verification_section' // Section.
+        );
+
+        register_setting(
+            'my_wordpress_plugin_options', // Option group.
+            'my_wordpress_plugin_options', // Option name.
+            array( $this, 'sanitize' ) // Sanitize callback.
+        );
+    }
+
+    public function custom_verification_section_callback() {
+        echo 'Configure verification API information here.';
+    }
+
+    public function add_admin_menu() {
+        add_options_page(
+            'My WordPress Plugin', // Page title.
+            'My WordPress Plugin', // Menu title.
+            'manage_options', // Capability.
+            'my_wordpress_plugin', // Menu slug.
+            array( $this, 'admin_page' ) // Callback.
+        );
+    }
+
+    public function admin_page() {
+        ?>
+        <div class="wrap">
+            <h2>My WordPress Plugin</h2>
+            <form method="post" action="options.php">
+                <?php settings_fields( 'my_wordpress_plugin_options' ); ?>
+                <?php do_settings_sections( 'custom_verification_settings' ); ?>
+                <?php submit_button(); ?>
+            </form>
+        </div>
+        <?php
+    }
+}
+
+$my_wordpress_plugin_admin = new My_WordPress_Plugin_Admin();
+add_action( 'admin_menu', array( $my_wordpress_plugin_admin, 'add_admin_menu' ) );
+add_action( 'admin_init', array( $my_wordpress_plugin_admin, 'custom_verification_settings' ) );
