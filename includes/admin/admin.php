@@ -2,6 +2,8 @@
 // 安全校验
 defined('ABSPATH') or die('No script kiddies please!');
 
+//第一部分：定义 WordPress 后台管理页面
+
 // 添加插件设置菜单项
 add_action('admin_menu', 'my_wordpress_plugin_add_admin_menu');
 
@@ -13,6 +15,25 @@ function my_wordpress_plugin_add_admin_menu() {
         'my_wordpress_plugin_settings',    // 菜单slug
         'my_wordpress_plugin_settings_page',// 显示的页面回调函数
         'dashicons-admin-generic'          // 菜单图标
+    );
+
+    // 添加子菜单项
+    add_submenu_page(
+        'my_wordpress_plugin_settings',    // 父级菜单slug
+        '基本设置',                       // 页面标题
+        '基本设置',                       // 菜单标题
+        'manage_options',                  // 菜单权限
+        'my_wordpress_plugin_settings',    // 菜单slug
+        'my_wordpress_plugin_settings_page' // 显示的页面回调函数
+    );
+
+    add_submenu_page(
+        'my_wordpress_plugin_settings',    // 父级菜单slug
+        '高级设置',                       // 页面标题
+        '高级设置',                       // 菜单标题
+        'manage_options',                  // 菜单权限
+        'my_wordpress_plugin_advanced_settings', // 菜单slug
+        'my_wordpress_plugin_advanced_settings_page' // 显示的页面回调函数
     );
 }
 
@@ -44,38 +65,782 @@ function my_wordpress_plugin_settings_page() {
     // 插件设置页面 HTML
     ?>
     <div class="wrap">
-        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        <form method="post" action="">
-            <?php wp_nonce_field('my_wordpress_plugin_settings'); ?>
-            <table class="form-table">
-                <tbody>
-                    <tr>
-                        <th scope="row"><label for="my_wordpress_plugin_login_url">自定义登录链接</label></th>
-                        <td>
-                            <input name="my_wordpress_plugin_login_url" type="url" id="my_wordpress_plugin_login_url" value="<?php echo esc_attr($login_url); ?>" class="regular-text">
-                            <p class="description">在这里输入自定义的登录链接，留空则使用默认链接。</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label>用户注册设置</label></th>
-                        <td>
-                            <fieldset>
-                                <legend class="screen-reader-text"><span>用户注册设置</span></legend>
-                                <label>
-                                    <input name="my_wordpress_plugin_register_enable_password_confirmation" type="checkbox" id="my_wordpress_plugin_register_enable_password_confirmation" value="1" <?php checked($register_enable_password_confirmation, '1'); ?>>
-                                    开启密码确认
-                                </label>
-                            </fieldset>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="my_wordpress_plugin_social_login_providers">社交登录设置</label></th>
-                        <td>
-                            <input name="my_wordpress_plugin_social_login_providers" type="text" id="my_wordpress_plugin_social_login_providers" value="<?php echo esc_attr($social_login_providers); ?>" class="regular-text">
-                            <p class="description">在这里输入启用的社交登录提供商，多个提供商之间用英文逗号分隔，如：facebook,twitter,linkedin。</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="submit"><input type="submit" name
-                
+    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+    <form method="post" action="">
+        <?php wp_nonce_field('my_wordpress_plugin_settings'); ?>
+        <table class="form-table">
+            <tbody>
+                <tr>
+                    <th scope="row"><label for="my_wordpress_plugin_login_url">自定义登录链接</label></th>
+                    <td>
+                        <input name="my_wordpress_plugin_login_url" type="url" id="my_wordpress_plugin_login_url" value="<?php echo esc_attr($login_url); ?>" class="regular-text">
+                        <p class="description">在这里输入自定义的登录链接，留空则使用默认链接。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label>用户注册设置</label></th>
+                    <td>
+                        <fieldset>
+                            <legend class="screen-reader-text"><span>用户注册设置</span></legend>
+                            <label>
+                                <input name="my_wordpress_plugin_register_enable_password_confirmation" type="checkbox" id="my_wordpress_plugin_register_enable_password_confirmation" value="1" <?php checked($register_enable_password_confirmation, '1'); ?>>
+                                开启密码确认
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="my_wordpress_plugin_social_login_providers">社交登录设置</label></th>
+                    <td>
+                        <input name="my_wordpress_plugin_social_login_providers" type="text" id="my_wordpress_plugin_social_login_providers" value="<?php echo esc_attr($social_login_providers); ?>" class="regular-text">
+                        <p class="description">在这里输入启用的社交登录提供商，多个提供商之间用英文逗号分隔，如：facebook,twitter,linkedin。</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="submit"><input type="submit" name="my_wordpress_plugin_settings" id="submit" class="button button-primary" value="保存更改"></p>
+        </form>
+    </div>
+
+//第二部分：实现自定义登录 url
+
+<?php
+
+// Add a new option page to the Settings menu
+add_action( 'admin_menu', 'custom_login_url_settings_page' );
+
+function custom_login_url_settings_page() {
+add_options_page(
+__( 'Custom Login URL', 'custom-login-url' ),
+__( 'Custom Login URL', 'custom-login-url' ),
+'manage_options',
+'custom-login-url',
+'custom_login_url_settings_page_callback'
+);
+}
+
+// Add the form fields to the custom login URL option page
+function custom_login_url_settings_page_callback() {
+if ( ! current_user_can( 'manage_options' ) ) {
+return;
+}
+if ( isset( $_GET['settings-updated'] ) ) {
+    add_settings_error( 'custom_login_url_messages', 'custom_login_url_message', __( 'Settings Saved', 'custom-login-url' ), 'updated' );
+}
+
+settings_errors( 'custom_login_url_messages' );
+?>
+<div class="wrap">
+    <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+    <form action="options.php" method="post">
+        <?php
+        settings_fields( 'custom_login_url' );
+        do_settings_sections( 'custom_login_url' );
+        submit_button( __( 'Save Settings', 'custom-login-url' ) );
+        ?>
+    </form>
+</div>
+<?php
+}
+
+// Register the custom login URL option and settings
+add_action( 'admin_init', 'register_custom_login_url_settings' );
+
+function register_custom_login_url_settings() {
+register_setting(
+'custom_login_url',
+'custom_login_url',
+array(
+'type' => 'string',
+'sanitize_callback' => 'esc_url_raw'
+)
+);
+add_settings_section(
+    'custom_login_url_section',
+    __( 'Custom Login URL', 'custom-login-url' ),
+    'custom_login_url_section_callback',
+    'custom_login_url'
+);
+
+add_settings_field(
+    'custom_login_url_field',
+    __( 'Custom Login URL', 'custom-login-url' ),
+    'custom_login_url_field_callback',
+    'custom_login_url',
+    'custom_login_url_section'
+);
+}
+
+// Add the description to the custom login URL settings section
+function custom_login_url_section_callback() {
+echo '<p>' . esc_html__( 'Enter the custom login URL that you want to use instead of the default WordPress login URL.', 'custom-login-url' ) . '</p>';
+}
+
+// Add the form field for the custom login URL option
+function custom_login_url_field_callback() {
+$option_value = get_option( 'custom_login_url' );
+?>
+<input type="text" id="custom_login_url" name="custom_login_url" value="<?php echo esc_attr( $option_value ); ?>" size="50" />
+<?php
+}
+// Replace the default login url with the custom login url
+add_filter( 'login_url', 'custom_login_url_filter' );
+
+function custom_login_url_filter( $login_url ) {
+$custom_login_url = get_option( 'custom_login_url' );
+if ( ! empty( $custom_login_url ) ) {
+    return esc_url_raw( $custom_login_url );
+}
+
+return $login_url;
+
+}
+
+// Redirect users who access the default login or admin url to the custom login url
+add_action( 'init', 'redirect_default_login_and_admin_urls' );
+
+function redirect_default_login_and_admin_urls() {
+$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+// Check if the current url matches the default WordPress login url
+if (strpos($current_url, 'wp-login.php') !== false) {
+wp_redirect( home_url('/custom-login-url/') );
+exit;
+}
+
+// Check if the current url matches the default WordPress admin url
+if (strpos($current_url, 'wp-admin') !== false) {
+wp_redirect( home_url('/custom-admin-url/') );
+exit;
+}
+}
+
+//第三部分：隐藏登录地址并将其导向 404 页面
+
+// Hide the login page and redirect to 404 page
+add_action( 'template_redirect', 'hide_login_page' );
+
+function hide_login_page() {
+    global $wp;
+
+    // Get the custom login URL option
+    $custom_login_url = get_option( 'custom_login_url' );
+
+    // If the custom login URL option is empty, return
+    if ( empty( $custom_login_url ) ) {
+        return;
+    }
+
+    // Get the requested URL
+    $requested_url = home_url( $wp->request );
+
+    // Check if the requested URL matches the custom login URL
+    if ( $requested_url === $custom_login_url ) {
+        return;
+    }
+
+    // Check if the requested URL matches the default WordPress login URL
+    if ( $requested_url === wp_login_url() ) {
+        wp_redirect( home_url( '/404/' ) );
+        exit;
+    }
+}
+
+//第四部分：配置社交账号登录功能的 API 信息
+
+<?php
+// Social login settings
+function my_wp_plugin_social_login_settings() {
+    add_settings_section(
+        'my_wp_plugin_social_login_section',
+        __('Social Login Settings', 'my-wp-plugin'),
+        '',
+        'my_wp_plugin_settings'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_social_login_google',
+        __('Google', 'my-wp-plugin'),
+        'my_wp_plugin_social_login_google_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_social_login_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_social_login_microsoft',
+        __('Microsoft', 'my-wp-plugin'),
+        'my_wp_plugin_social_login_microsoft_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_social_login_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_social_login_tiktok',
+        __('Tiktok', 'my-wp-plugin'),
+        'my_wp_plugin_social_login_tiktok_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_social_login_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_social_login_twitter',
+        __('Twitter', 'my-wp-plugin'),
+        'my_wp_plugin_social_login_twitter_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_social_login_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_social_login_facebook',
+        __('Facebook', 'my-wp-plugin'),
+        'my_wp_plugin_social_login_facebook_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_social_login_section'
+    );
+
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_social_login_google');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_social_login_microsoft');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_social_login_tiktok');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_social_login_twitter');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_social_login_facebook');
+}
+
+// Google
+function my_wp_plugin_social_login_google_callback() {
+    $google_client_id = get_option('my_wp_plugin_social_login_google')['client_id'] ?? '';
+    $google_client_secret = get_option('my_wp_plugin_social_login_google')['client_secret'] ?? '';
+    ?>
+    <div class="social-login-provider">
+        <label for="my_wp_plugin_social_login_google_client_id"><?php _e('Client ID:', 'my-wp-plugin'); ?></label>
+        <input type="text" id="my_wp_plugin_social_login_google_client_id" name="my_wp_plugin_social_login_google[client_id]" value="<?php echo $google_client_id; ?>">
+        <label for="my_wp_plugin_social_login_google_client_secret"><?php _e('Client Secret:', 'my-wp-plugin'); ?></label>
+        <input type="text" id="my_wp_plugin_social_login_google_client_secret" name="my_wp_plugin_social_login_google[client_secret]" value="<?php echo $google_client_secret; ?>">
+    </div>
+    <?php
+}
+
+// Microsoft
+function my_wp_plugin_social_login_microsoft_callback() {
+    $microsoft_client_id = get_option('my_wp_plugin_social_login_microsoft')['client_id'] ?? '';
+    $microsoft_client_secret = get_option('my_wp_plugin_social_login_microsoft')['client_secret'] ?? '';
+    ?>
+    <div class="social-login-provider">
+        <label for="my_wp_plugin_social_login_microsoft_client_id"><?php esc_html_e('Client ID', 'my-wp-plugin'); ?></label>
+            <input type="text" id="my_wp_plugin_social_login_microsoft_client_id" name="my_wp_plugin_social_login_microsoft[client_id]" value="<?php echo esc_attr($microsoft_client_id); ?>">
+    </div>
+    <div class="social-login-provider">
+    <label for="my_wp_plugin_social_login_microsoft_client_secret"><?php esc_html_e('Client Secret', 'my-wp-plugin'); ?></label>
+    <input type="text" id="my_wp_plugin_social_login_microsoft_client_secret" name="my_wp_plugin_social_login_microsoft[client_secret]" value="<?php echo esc_attr($microsoft_client_secret); ?>">
+</div>
+<?php
+}
+add_action('my_wp_plugin_social_login_microsoft', 'my_wp_plugin_social_login_microsoft_callback');
+
+//my_wp_plugin_social_login_settings(): 这个函数添加了一个名为"Social Login Settings"的设置节，并注册了5个不同的设置字段，这些字段是从其他5个函数调用的回调函数中获取的。每个回调函数在其对应的设置字段中显示一些 HTML 元素，以便用户可以输入和保存相关的 API 信息。
+
+//my_wp_plugin_social_login_google_callback(): 这个函数显示了一个 label 元素和一个输入框元素，用于输入和保存 Google API 的客户端 ID 和客户端秘钥。
+
+//my_wp_plugin_social_login_microsoft_callback(): 这个函数类似于 my_wp_plugin_social_login_google_callback() 函数，但是用于 Microsoft API 的客户端 ID 和客户端秘钥。
+
+//add_action('my_wp_plugin_social_login_microsoft', 'my_wp_plugin_social_login_microsoft_callback'): 这个函数调用了 my_wp_plugin_social_login_microsoft_callback() 函数，并将其添加到 WordPress 的行为队列中，以便在需要时调用它。
+
+
+//第五部分：配置 SMTP 邮件服务，并提供测试和衔接 WordPress 邮件信息推送功能
+
+//1. 添加一个名为 my_wp_plugin_smtp_settings 的函数，用于在 WordPress 设置页面添加 SMTP 邮件服务的配置选项。
+
+//2. 在 my_wp_plugin_smtp_settings 函数中添加一个名为 my_wp_plugin_smtp_server_callback 的回调函数，用于在设置页面中显示 SMTP 服务器的主机名和端口号配置选项。
+
+//3. 在 my_wp_plugin_smtp_settings 函数中添加一个名为 my_wp_plugin_smtp_authentication_callback 的回调函数，用于在设置页面中显示 SMTP 身份验证的用户名和密码配置选项。
+
+//4. 在 my_wp_plugin_smtp_settings 函数中添加一个名为 my_wp_plugin_smtp_test_callback 的回调函数，用于提供 SMTP 邮件服务的测试按钮。
+
+//5.添加一个名为 my_wp_plugin_wp_mail_smtp 的函数，用于衔接 WordPress 的 wp_mail 函数和 SMTP 邮件服务。
+
+<?php
+// SMTP settings
+// Register SMTP settings and options
+function my_wp_plugin_smtp_settings() {
+    add_settings_section(
+        'my_wp_plugin_smtp_section',
+        __('SMTP Settings', 'my-wp-plugin'),
+        '',
+        'my_wp_plugin_settings'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_smtp_server',
+        __('SMTP Server', 'my-wp-plugin'),
+        'my_wp_plugin_smtp_server_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_smtp_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_smtp_port',
+        __('SMTP Port', 'my-wp-plugin'),
+        'my_wp_plugin_smtp_port_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_smtp_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_smtp_encryption',
+        __('Encryption', 'my-wp-plugin'),
+        'my_wp_plugin_smtp_encryption_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_smtp_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_smtp_authentication',
+        __('Authentication', 'my-wp-plugin'),
+        'my_wp_plugin_smtp_authentication_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_smtp_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_smtp_from_name',
+        __('From Name', 'my-wp-plugin'),
+        'my_wp_plugin_smtp_from_name_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_smtp_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_smtp_from_address',
+        __('From Address', 'my-wp-plugin'),
+        'my_wp_plugin_smtp_from_address_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_smtp_section'
+    );
+
+    add_settings_field(
+        'my_wp_plugin_smtp_test_email',
+        __('Test Email', 'my-wp-plugin'),
+        'my_wp_plugin_smtp_test_email_callback',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_smtp_section'
+    );
+
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_server');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_port');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_encryption');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_authentication');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_username');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_password');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_from_name');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_from_address');
+    register_setting('my_wp_plugin_settings', 'my_wp_plugin_smtp_test_email');
+}
+
+// SMTP server
+function my_wp_plugin_smtp_server_callback() {
+    $smtp_server = get_option('my_wp_plugin_smtp_server');
+    $smtp_host = isset($smtp_server['host']) ? $smtp_server['host'] : '';
+    $smtp_port = isset($smtp_server['port']) ? $smtp_server['port'] : '';
+    ?>
+    <div class="smtp-server">
+        <label for="my_wp_plugin_smtp_host"><?php _e('Host:', 'my-wp-plugin'); ?></label>
+        <input type="text" id="my_wp_plugin_smtp_host" name="my_wp_plugin_smtp_server[host]" value="<?php echo $smtp_host; ?>">
+        <label for="my_wp_plugin_smtp_port"><?php _e('Port:', 'my-wp-plugin'); ?></label>
+        <input type="text" id="my_wp_plugin_smtp_port" name="my_wp_plugin_smtp_server[port]" value="<?php echo $smtp_port; ?>">
+    </div>
+    <?php
+}
+
+// SMTP authentication
+function my_wp_plugin_smtp_authentication_callback() {
+    $smtp_authentication = get_option('my_wp_plugin_smtp_authentication');
+    $smtp_username = isset($smtp_authentication['username']) ? $smtp_authentication['password'] : '';
+?>
+<div class="smtp-authentication">
+<label for="my_wp_plugin_smtp_authentication_username"><?php esc_html_e('Username', 'my-wp-plugin'); ?></label>
+<input type="text" id="my_wp_plugin_smtp_authentication_username" name="my_wp_plugin_smtp_authentication[username]" value="<?php echo esc_attr($smtp_username); ?>">
+<label for="my_wp_plugin_smtp_authentication_password"><?php esc_html_e('Password', 'my-wp-plugin'); ?></label>
+<input type="password" id="my_wp_plugin_smtp_authentication_password" name="my_wp_plugin_smtp_authentication[password]" value="<?php echo esc_attr($smtp_password); ?>">
+</div>
+<?php
+}
+
+// SMTP settings
+function my_wp_plugin_smtp_settings_callback() {
+$smtp_settings = get_option('my_wp_plugin_smtp_settings');
+$smtp_host = isset($smtp_settings['host']) ? $smtp_settings['host'] : '';
+$smtp_port = isset($smtp_settings['port']) ? $smtp_settings['port'] : '';
+$smtp_encryption = isset($smtp_settings['encryption']) ? $smtp_settings['encryption'] : '';
+?>
+<div class="smtp-settings">
+<label for="my_wp_plugin_smtp_settings_host"><?php esc_html_e('Host', 'my-wp-plugin'); ?></label>
+<input type="text" id="my_wp_plugin_smtp_settings_host" name="my_wp_plugin_smtp_settings[host]" value="<?php echo esc_attr($smtp_host); ?>">
+<label for="my_wp_plugin_smtp_settings_port"><?php esc_html_e('Port', 'my-wp-plugin'); ?></label>
+<input type="text" id="my_wp_plugin_smtp_settings_port" name="my_wp_plugin_smtp_settings[port]" value="<?php echo esc_attr($smtp_port); ?>">
+<label for="my_wp_plugin_smtp_settings_encryption"><?php esc_html_e('Encryption', 'my-wp-plugin'); ?></label>
+<select id="my_wp_plugin_smtp_settings_encryption" name="my_wp_plugin_smtp_settings[encryption]">
+<option value="" <?php selected($smtp_encryption, ''); ?>><?php esc_html_e('None', 'my-wp-plugin'); ?></option>
+<option value="ssl" <?php selected($smtp_encryption, 'ssl'); ?>><?php esc_html_e('SSL', 'my-wp-plugin'); ?></option>
+<option value="tls" <?php selected($smtp_encryption, 'tls'); ?>><?php esc_html_e('TLS', 'my-wp-plugin'); ?></option>
+</select>
+</div>
+<?php
+}
+
+// SMTP test email
+function my_wp_plugin_smtp_test_email_callback() {
+?>
+<div class="smtp-test-email">
+<p><?php esc_html_e('Enter an email address to send a test email.', 'my-wp-plugin'); ?></p>
+<input type="email" id="my_wp_plugin_smtp_test_email_address" name="my_wp_plugin_smtp_test_email_address" value="">
+<button id="my_wp_plugin_smtp_test_email_button" class="button"><?php esc_html_e('Send Test Email', 'my-wp-plugin'); ?></button>
+<p id="my_wp_plugin_smtp_test_email_result"></p>
+</div>
+<?php
+}
+
+// Register SMTP settings and options
+function my_wp_plugin_smtp_settings() {
+add_settings_section(
+'my_wp_plugin_smtp_section',
+__('SMTP Settings', 'my-wp-plugin'),
+'',
+'my_wp_plugin_settings'
+);
+
+//注：上述代码中找不到my_wp_plugin_smtp_test_email_callback()函数的定义，该函数似乎应该用于测试 SMTP 设置并在测试电子邮件发送后提供反馈。所以这个函数可能在代码的其他部分定义。
+
+//第六部分：管理用户上传的自定义头像
+
+/**
+ * Admin Class
+ *
+ * @package my-wordpress-plugin
+ */
+
+namespace MyWordPressPlugin\Admin;
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+use MyWordPressPlugin\Includes\Views\Avatar_Upload_Form;
+use MyWordPressPlugin\Includes\Models\User;
+use WP_Error;
+
+/**
+ * Admin class.
+ */
+class Admin {
+
+    /**
+     * Class constructor.
+     */
+    public function __construct() {
+        add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+        add_action( 'admin_init', array( $this, 'page_init' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+    }
+
+    /**
+    * Sanitize the input.
+     *
+     * @param array $input Contains all settings fields as array keys.
+     * @return array
+     */
+    public function sanitize( $input ) {
+        $sanitized_input = array();
+
+        // Sanitize custom_avatar_option field.
+        if ( isset( $input['custom_avatar_option'] ) ) {
+            $sanitized_input['custom_avatar_option'] = sanitize_text_field( $input['custom_avatar_option'] );
+        }
+
+      return $sanitized_input;
+    }
+
+    /**
+     * Add options page.
+     */
+    public function add_plugin_page() {
+        add_users_page(
+            'My WordPress Plugin Settings',
+            'My WP Plugin',
+            'manage_options',
+            'my-wordpress-plugin',
+            array( $this, 'create_admin_page' )
+        );
+    }
+
+    /**
+     * Options page callback.
+     */
+    public function create_admin_page() {
+        // Set class property.
+        $this->options = get_option( 'my_option_name' );
+        ?>
+        <div class="wrap">
+            <h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
+            <?php settings_errors(); ?>
+            <form method="post" enctype="multipart/form-data" action="options.php">
+                <?php
+                    settings_fields( 'my_option_group' );
+                    do_settings_sections( 'my-wordpress-plugin' );
+                    submit_button();
+                ?>
+            </form>
+            <?php
+            $avatar_form = new Avatar_Upload_Form( new User() );
+            echo $avatar_form->render();
+            ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Register and add settings.
+     */
+    public function page_init() {
+        register_setting(
+            'my_option_group', // Option group.
+            'my_option_name', // Option name.
+            array( $this, 'sanitize' ) // Sanitize callback.
+        );
+
+        add_settings_section(
+            'setting_section_id', // ID.
+            'Settings', // Title.
+            array( $this, 'print_section_info' ), // Callback.
+            'my-wordpress-plugin' // Page.
+        );
+
+        add_settings_field(
+            'id_number', // ID.
+            'ID Number', // Title.
+            array( $this, 'id_number_callback' ), // Callback.
+            'my-wordpress-plugin', // Page.
+            'setting_section_id' // Section.
+        );
+
+        add_settings_field(
+            'title', // ID.
+            'Title', // Title.
+            array( $this, 'custom_avatar_settings_callback' ), // Callback function.
+                'custom_avatar_settings', // Page to add the setting to.
+                'custom_avatar_section' // Section to add the setting to.
+            );
+        add_action( 'personal_options_update', array( $this, 'save_custom_avatar' ) );
+        add_action( 'edit_user_profile_update', array( $this, 'save_custom_avatar' ) );
+        }
+/**
+ * Callback function for custom avatar settings.
+ */
+public function custom_avatar_settings_callback() {
+    echo '<p>' . esc_html__( 'Choose whether users can upload their own custom avatar or use the default avatar provided by the site.', 'my-textdomain' ) . '</p>';
+
+    $option = get_option( 'custom_avatar_option', 'default' );
+
+    $checked_default = '';
+    $checked_custom = '';
+
+    if ( 'default' === $option ) {
+        $checked_default = 'checked';
+    } else if ( 'custom' === $option ) {
+        $checked_custom = 'checked';
+    }
+
+    echo '<label><input type="radio" name="custom_avatar_option" value="default" ' . $checked_default . ' /> ' . esc_html__( 'Use default avatar', 'my-textdomain' ) . '</label><br />';
+    echo '<label><input type="radio" name="custom_avatar_option" value="custom" ' . $checked_custom . ' /> ' . esc_html__( 'Allow custom avatar upload', 'my-textdomain' ) . '</label>';
+}
+
+/**
+ * Sanitize the custom avatar option before saving to database.
+ *
+ * @param string $input The input to sanitize.
+ *
+ * @return string The sanitized input.
+ */
+public function sanitize_custom_avatar_option( $input ) {
+    $valid_options = array(
+        'default',
+        'custom'
+    );
+
+    if ( in_array( $input, $valid_options ) ) {
+        return $input;
+    } else {
+        return 'default';
+    }
+}
+
+/**
+ * Add custom avatar upload field to user profile page.
+ *
+ * @param WP_User $user The user being edited.
+ */
+public function add_custom_avatar_field( $user ) {
+    wp_nonce_field( 'my_custom_avatar_nonce', 'custom_avatar_nonce' );
+    $custom_avatar = get_user_meta( $user->ID, 'custom_avatar', true );
+
+    if ( $custom_avatar ) {
+        $url = $custom_avatar;
+    } else {
+        $url = get_avatar_url( $user->ID );
+    }
+
+    ?>
+    <h3><?php esc_html_e( 'Custom Avatar', 'my-textdomain' ); ?></h3>
+    <table class="form-table">
+        <tr>
+            <th>
+                <label for="custom_avatar"><?php esc_html_e( 'Avatar', 'my-textdomain' ); ?></label>
+            </th>
+            <td>
+                <img src="<?php echo esc_url( $url ); ?>" alt="<?php esc_attr_e( 'Avatar', 'my-textdomain' ); ?>" class="custom-avatar-preview" /><br />
+                <input type="text" name="custom_avatar" id="custom_avatar" value="<?php echo esc_attr( $custom_avatar ); ?>" class="regular-text" /><br />
+                <input type="file" name="custom_avatar" />
+                <input type="button" class="button button-secondary custom-avatar-upload" value="<?php esc_attr_e( 'Upload Avatar', 'my-textdomain' ); ?>" />
+                <input type="button" class="button button-secondary custom-avatar-remove" value="<?php esc_attr_e( 'Remove Avatar', 'my-textdomain' ); ?>" />
+            </td>
+        </tr>
+    </table>
+    <?php
+    if ( $custom_avatar ) {
+    $url = $custom_avatar;
+    } else {
+        $url = get_avatar_url( $user->ID );
+        }
+    ?>
+    <h3><?php esc_html_e( 'Custom Avatar', 'my-textdomain' ); ?></h3>
+    <table class="form-table">
+        <tr>
+            <th>
+                <label for="custom_avatar"><?php esc_html_e( 'Avatar', 'my-textdomain' ); ?></label>
+            </th>
+            <td>
+                <img src="<?php echo esc_url( $url ); ?>" alt="<?php esc_attr_e( 'Avatar', 'my-textdomain' ); ?>" class="custom-avatar" />
+                <br />
+                <input type="file" id="custom_avatar" name="custom_avatar" />
+            </td>
+        </tr>
+    </table>
+    }
+<?php
+/**
+ * Save custom avatar field on user profile page.
+ *
+ * @param int $user_id The ID of the user being edited.
+ */
+public function save_custom_avatar_field( $user_id ) {
+    if ( ! current_user_can( 'edit_user', $user_id ) ) {
+return;
+}
+if ( isset( $_POST['custom_avatar'] ) ) {
+    update_user_meta( $user_id, 'custom_avatar', sanitize_text_field( $_POST['custom_avatar'] ) );
+} else {
+    delete_user_meta( $user_id, 'custom_avatar' );
+}
+}
+
+/**
+
+Display custom avatar field on user profile page.
+@param WP_User $user The user object being edited.
+*/
+public function custom_avatar_field( $user ) {
+$custom_avatar = get_user_meta( $user->ID, 'custom_avatar', true );
+?>
+ <h3><?php _e( 'Custom Avatar', 'myplugin' ); ?></h3>
+ <table class="form-table">
+     <tr>
+         <th><label for="custom_avatar"><?php _e( 'Avatar URL', 'myplugin' ); ?></label></th>
+         <td>
+             <input type="text" name="custom_avatar" id="custom_avatar" value="<?php echo esc_attr( $custom_avatar ); ?>" class="regular-text" /><br />
+             <span class="description"><?php _e( 'Enter the URL of your custom avatar image.', 'myplugin' ); ?></span>
+         </td>
+     </tr>
+ </table>
+ <?php
+}
+/**
+
+Enqueue scripts and styles for media uploader.
+*/
+public function enqueue_media_uploader() {
+wp_enqueue_media();
+wp_enqueue_script( 'myplugin-media-uploader', plugins_url( '/js/media-uploader.js', FILE ), array( 'jquery' ), '1.0.0', true );
+}
+/**
+
+Save custom avatar field using media uploader.
+
+@param int $user_id The ID of the user being edited.
+*/
+public function save_custom_avatar_field_media_uploader( $user_id ) {
+if ( ! current_user_can( 'edit_user', $user_id ) ) {
+return;
+}
+
+if ( isset( $_POST['custom_avatar'] ) ) {
+update_user_meta( $user_id, 'custom_avatar', sanitize_text_field( $_POST['custom_avatar'] ) );
+} elseif ( isset( $_POST['custom_avatar_attachment_id'] ) ) {
+update_user_meta( $user_id, 'custom_avatar', wp_get_attachment_url( $_POST['custom_avatar_attachment_id'] ) );
+} else {
+delete_user_meta( $user_id, 'custom_avatar' );
+}
+}
+/**
+
+Display custom avatar field using media uploader.
+@param WP_User $user The user object being edited.
+*/
+public function custom_avatar_field_media_uploader( $user ) {
+$custom_avatar = get_user_meta( $user->ID, 'custom_avatar', true );
+$custom_avatar_id = attachment_url_to_postid( $custom_avatar );
+?>
+ <h3><?php _e( 'Custom Avatar', 'myplugin' ); ?></h3>
+ <table class="form-table">
+     <tr>
+         <th><label for="custom_avatar"><?php _e( 'Avatar', 'myplugin' ); ?></label></th>
+         <td>
+             <div class="custom-avatar-preview">
+                 <?php if ( $custom_avatar ) : ?>
+                     <img src="<?php echo esc_url( $custom_avatar ); ?>" alt="" style="max-width: 100%;" />
+                 <?php endif; ?>
+             </div>
+             <input type="hidden" name="custom_avatar_attachment_id" id="custom_avatar_attachment_id" value="<?php echo esc_attr( $custom_avatar_id ); ?>" />
+             <button type="button" class="button button-secondary custom_avatar_upload"><?php _e( 'Upload Avatar', 'myplugin' ); ?></button>
+<button type="button" class="button custom_avatar_remove"><?php _e( 'Remove Avatar', 'myplugin' ); ?></button>
+<p class="description"><?php _e( 'Upload a custom avatar for this user.', 'myplugin' ); ?></p>
+</td>
+</tr>
+
+ </table>
+<?php
+}
+/**
+
+Enqueue scripts and styles for the custom avatar field media uploader.
+*/
+public function custom_avatar_field_media_uploader_scripts() {
+wp_enqueue_media();
+wp_enqueue_script( 'custom-avatar-field-media-uploader', plugin_dir_url( FILE ) . 'js/custom-avatar-field-media-uploader.js', array( 'jquery' ), '1.0.0', true );
+}
+/**
+
+Save custom avatar field attachment ID on user profile page.
+@param int $user_id The ID of the user being edited.
+*/
+public function save_custom_avatar_field_attachment_id( $user_id ) {
+if ( isset( $_POST['custom_avatar_attachment_id'] ) ) {
+update_user_meta( $user_id, 'custom_avatar', wp_get_attachment_url( absint( $_POST['custom_avatar_attachment_id'] ) ) );
+}
+}
+/**
+
+Remove custom avatar field attachment ID from user profile page.
+@param int $user_id The ID of the user being edited.
+*/
+public function remove_custom_avatar_field_attachment_id( $user_id ) {
+delete_user_meta( $user_id, 'custom_avatar' );
+}
