@@ -4,7 +4,7 @@
  *
  * This template is used to display the user verification form.
  *
- * @package My_WordPress_Plugin
+ * @package my-wordpress-plugin
  */
 
 // Exit if accessed directly.

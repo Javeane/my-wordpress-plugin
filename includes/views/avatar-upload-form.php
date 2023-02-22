@@ -4,7 +4,7 @@
  *
  * This file is used to display the avatar upload form.
  *
- * @package My_WordPress_Plugin
+ * @package my-wordpress-plugin
  */
 
 // Prevent direct access to this file.

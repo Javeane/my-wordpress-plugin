@@ -4,7 +4,7 @@
  *
  * This class handles the customization of the WordPress login page.
  *
- * @package My_WordPress_Plugin
+ * @package my-wordpress-plugin
  * @subpackage Core
  */
 

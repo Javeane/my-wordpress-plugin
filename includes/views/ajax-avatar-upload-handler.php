@@ -5,7 +5,7 @@
  *
  * This file is used to handle avatar uploads via AJAX.
  *
- * @package My_WordPress_Plugin
+ * @package my-wordpress-plugin
  */
 
 // Prevent direct access to this file.
