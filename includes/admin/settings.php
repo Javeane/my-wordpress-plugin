@@ -936,6 +936,9 @@ if (isset($_POST['my_plugin_save_settings'])) {
 }
 ?>
 
+//WordPress Settings API 调用
+
+<?php
 // 在 admin_menu 钩子中添加选项页面
 add_action( 'admin_menu', 'my_wp_plugin_settings_page' );
 function my_wp_plugin_settings_page() {
