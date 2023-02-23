@@ -101,8 +101,8 @@ My Wordpress Plugin 是一个优化 Wordpress 基础功能的插件，希望通�
 # **My Wordpress Plugin 的文件目录结构**
 
  my-wordpress-plugin/    
-├── includes/                               ··包含插件的主要功能，分为后台和前台代码。
-│   ├── admin/                              ··包含插件后台管理菜单和插件设置等页面的代码逻辑。
+├── includes/                              ··包含插件的主要功能，分为后台和前台代码。
+│   ├── admin/                            ··包含插件后台管理菜单和插件设置等页面的代码逻辑。
 │   │   ├── admin.php                // 后台管理页面的主要代码逻辑
 │   │   ├── menu.php                 // 自定义 WordPress 菜单的代码逻辑
 │   │   └── settings.php              // 插件的设置页面代码逻辑
@@ -120,7 +120,7 @@ My Wordpress Plugin 是一个优化 Wordpress 基础功能的插件，希望通�
 │   ├── models/                         ··包含插件的用户模型和邮件验证模型的代码逻辑。
 │   │   ├── user.php                   // 插件的用户模型代码逻辑
 │   │   └── email-verification.php      // 插件的邮件验证模型代码逻辑
-│   ├── views/                                    ··包含登录、注册、社交登录、用户验证和用户头像上传等各种表单的代码逻辑。
+│   ├── views/                                    ··包含登录、注册、社交登录、用户验证和头像上传等表单的代码逻辑。
 │   │   ├── login-form.php                 // 插件的登录表单代码逻辑
 │   │   ├── register-form.php            // 插件的注册表单代码逻辑
 │   │   ├── social-login.php               // 插件的社交登录表单代码逻辑
