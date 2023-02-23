@@ -106,3 +106,29 @@ function my_wp_plugin_support_page() {
     // Render the support template.
     include_once MY_WP_PLUGIN_PATH . 'templates/support.php';
 }
+<?php
+/**
+ * Register custom menu page
+ */
+function my_wp_plugin_register_menu_page() {
+    add_menu_page(
+        'Custom Menu Page',
+        'Custom Menu',
+        'manage_options',
+        'my_wp_plugin_custom_menu_page',
+        'my_wp_plugin_render_custom_menu_page'
+    );
+}
+add_action( 'admin_menu', 'my_wp_plugin_register_menu_page' );
+
+/**
+ * Render custom menu page
+ */
+function my_wp_plugin_render_custom_menu_page() {
+    ?>
+    <div class="wrap">
+        <h1>Custom Menu Page</h1>
+        <p>This is a custom menu page.</p>
+    </div>
+    <?php
+}
