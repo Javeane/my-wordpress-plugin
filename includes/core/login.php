@@ -1,158 +1,175 @@
 <?php
 /**
- * Plugin login module.
+ * The file that defines the login functionality of the plugin.
  *
- * This class handles the customization of the WordPress login page.
+ * @link       https://github.com/Javeane/my-wordpress-plugin
+ * @since      1.0.0
  *
- * @package my-wordpress-plugin
- * @subpackage Core
+ * @package    My_WordPress_Plugin
+ * @subpackage My_WordPress_Plugin/includes/core
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
+/**
+ * The login-specific functionality of the plugin.
+ *
+ * Defines the plugin name, version, and hooks for how to
+ * authenticate users to the WordPress site.
+ *
+ * @package    My_WordPress_Plugin
+ * @subpackage My_WordPress_Plugin/includes/core
+ */
+class My_WordPress_Plugin_Login {
 
-class My_WP_Login {
 	/**
-	 * The plugin options.
+	 * The ID of this plugin.
 	 *
-	 * @var array
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
-	private $options;
+	private $plugin_name;
 
 	/**
-	 * The plugin version.
+	 * The version of this plugin.
 	 *
-	 * @var string
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
 
 	/**
-	 * Initialize the class.
+	 * Initialize the class and set its properties.
 	 *
-	 * @param array  $options The plugin options.
-	 * @param string $version The plugin version.
+	 * @since    1.0.0
+	 * @param    string    $plugin_name       The name of the plugin.
+	 * @param    string    $version    The version of this plugin.
 	 */
-	public function __construct( $options, $version ) {
-		$this->options = $options;
+	public function __construct( $plugin_name, $version ) {
+
+		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
-		add_action( 'init', array( $this, 'init' ) );
-		add_filter( 'authenticate', array( $this, 'authenticate' ), 10, 3 );
-		add_action( 'login_head', array( $this, 'custom_login_head' ) );
-		add_filter( 'login_headerurl', array( $this, 'custom_login_header_url' ) );
-		add_filter( 'login_message', array( $this, 'custom_login_message' ) );
 	}
 
 	/**
-	 * Initialize the login customization.
+	 * Register the stylesheets for the login page.
+	 *
+	 * @since    1.0.0
+	 * @access   public
 	 */
-	public function init() {
-		$this->add_rewrite_rules();
+	public function enqueue_styles() {
 
-		if ( ! is_user_logged_in() && strpos( $_SERVER['REQUEST_URI'], 'wp-login.php' ) !== false ) {
-			wp_redirect( home_url( '/404/' ) );
-			exit();
-		}
+		wp_enqueue_style( $this->plugin_name . '-login-style', plugin_dir_url( __FILE__ ) . '../../assets/css/login-style.css', array(), $this->version, 'all' );
 
-		if ( ! is_user_logged_in() && strpos( $_SERVER['REQUEST_URI'], 'wp-admin' ) !== false ) {
-			wp_redirect( home_url( '/404/' ) );
-			exit();
-		}
 	}
 
 	/**
-	 * Add rewrite rules.
+	 * Register the JavaScript for the login page.
+	 *
+	 * @since    1.0.0
+	 * @access   public
 	 */
-	private function add_rewrite_rules() {
-		add_action( 'init', array( $this, 'flush_rewrite_rules' ) );
+	public function enqueue_scripts() {
 
-		add_rewrite_rule(
-			'^login$',
-			'wp-login.php',
-			'top'
-		);
+		wp_enqueue_script( $this->plugin_name . '-login-script', plugin_dir_url( __FILE__ ) . '../../assets/js/login.js', array( 'jquery' ), $this->version, false );
 
-		add_rewrite_rule(
-			'^login/(.*)',
-			'wp-login.php?$1',
-			'top'
-		);
 	}
 
 	/**
-	 * Flush the rewrite rules.
+	 * Register the login page shortcode.
+	 *
+	 * @since    1.0.0
+	 * @access   public
 	 */
-	public function flush_rewrite_rules() {
-		$rules = get_option( 'rewrite_rules' );
+	public function add_login_shortcode() {
 
-		if ( ! isset( $rules['login$'] ) ) {
-			global $wp_rewrite;
-			$wp_rewrite->flush_rules();
-		}
+		add_shortcode( 'my_wp_plugin_login_form', array( $this, 'render_login_form' ) );
+
 	}
 
-		// Check if user account is verified
-	if ( ! $this->is_account_verified( $user ) ) {
-		$this->redirect_to_verification_page( $redirect_to );
-		return;
+	/**
+	 * Render the login form.
+	 *
+	 * @since    1.0.0
+	 * @access   public
+	 * @param    array     $atts    Shortcode attributes.
+	 * @return   string             The HTML markup for the login form.
+	 */
+	public function render_login_form( $atts ) {
+
+		// Get the shortcode attributes.
+		$atts = shortcode_atts( array(
+			'redirect_to' => '',
+		), $atts, 'my_wp_plugin_login_form' );
+
+		// Get the redirect URL.
+		$redirect_to = isset( $atts['redirect_to'] ) ? esc_url_raw( $atts['redirect_to'] ) : '';
+
+		// Get the error message if present.
+		$error = isset( $_GET['login_error'] ) ? $this->get_error_message( $_GET['login_error'] ) : '';
+			// Check if the user is already logged in.
+	if ( is_user_logged_in() ) {
+		// Redirect to the homepage or the specified URL.
+		wp_redirect( $redirect_to ? $redirect_to : home_url() );
+		exit;
 	}
 
-	// Authenticate the user.
-	wp_set_auth_cookie( $user->ID, $credentials['remember'] );
-	do_action( 'wp_login', $user->user_login, $user );
+	// Get the login URL.
+	$login_url = esc_url( wp_login_url( $redirect_to ) );
 
-	// Redirect to the appropriate page.
-	if ( ! empty( $redirect_to ) ) {
-		wp_safe_redirect( $redirect_to );
-	} else {
-		wp_redirect( home_url() );
+	// Start building the HTML markup for the login form.
+	$output = '';
+
+	// Add the error message if present.
+	if ( $error ) {
+		$output .= '<p class="error">' . esc_html( $error ) . '</p>';
 	}
+
+	// Add the login form.
+	$output .= '<form id="my_wp_plugin_login_form" class="my-wp-plugin-form" action="' . $login_url . '" method="post">';
+	$output .= '<p class="form-row form-row-wide">';
+	$output .= '<label for="my_wp_plugin_username">' . esc_html__( 'Username or Email Address', 'my-wp-plugin' ) . ' <span class="required">*</span></label>';
+	$output .= '<input type="text" name="log" id="my_wp_plugin_username" class="input-text" value="' . esc_attr( $this->get_posted_value( 'log' ) ) . '" required />';
+	$output .= '</p>';
+	$output .= '<p class="form-row form-row-wide">';
+	$output .= '<label for="my_wp_plugin_password">' . esc_html__( 'Password', 'my-wp-plugin' ) . ' <span class="required">*</span></label>';
+	$output .= '<input type="password" name="pwd" id="my_wp_plugin_password" class="input-text" value="" required />';
+	$output .= '</p>';
+
+	// Add the submit button.
+	$output .= '<p class="form-row">';
+	$output .= '<button type="submit" name="wp-submit" id="my_wp_plugin_submit" class="button">' . esc_html__( 'Log in', 'my-wp-plugin' ) . '</button>';
+	$output .= '<input type="hidden" name="redirect_to" value="' . esc_attr( $redirect_to ) . '" />';
+	$output .= '<input type="hidden" name="my_wp_plugin_login" value="1" />';
+	$output .= '</p>';
+	$output .= '</form>';
+
+	// Return the login form.
+	return $output;
 }
 
 /**
- * Check if the user account is verified.
+ * Get the error message for a given error code.
  *
- * @param WP_User $user The user object.
- * @return bool Whether the account is verified.
+ * @since    1.0.0
+ * @access   protected
+ * @param    string    $error_code    The error code.
+ * @return   string                   The error message.
  */
-protected function is_account_verified( $user ) {
-	if ( $user instanceof WP_User ) {
-		$verified = get_user_meta( $user->ID, 'is_email_verified', true );
-		if ( ! empty( $verified ) && $verified == 'yes' ) {
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
- * Redirect to the email verification page.
- *
- * @param string $redirect_to The URL to redirect to after verification.
- */
-protected function redirect_to_verification_page( $redirect_to = '' ) {
-	$verification_page_url = $this->get_verification_page_url();
-	if ( ! empty( $verification_page_url ) ) {
-		if ( ! empty( $redirect_to ) ) {
-			$verification_page_url = add_query_arg( 'redirect_to', $redirect_to, $verification_page_url );
-		}
-		wp_redirect( $verification_page_url );
-	}
-}
-
-/**
- * Get the email verification page URL.
- *
- * @return string The URL of the email verification page.
- */
-protected function get_verification_page_url() {
-	$page_id = get_option( 'my_wp_plugin_verification_page_id', '' );
-	if ( ! empty( $page_id ) ) {
-		$page_url = get_permalink( $page_id );
-		if ( ! empty( $page_url ) ) {
-			return $page_url;
-		}
-	}
-	return '';
+protected function get_error_message( $error_code ) {
+    switch ( $error_code ) {
+        case 'invalid_username':
+            return esc_html__( 'Invalid username.', 'my-wp-plugin' );
+        case 'empty_username':
+            return esc_html__( 'The username field is empty.', 'my-wp-plugin' );
+        case 'invalid_email':
+            return esc_html__( 'Invalid email address.', 'my-wp-plugin' );
+        case 'empty_password':
+            return esc_html__( 'The password field is empty.', 'my-wp-plugin' );
+        case 'incorrect_password':
+            return esc_html__( 'Incorrect password.', 'my-wp-plugin' );
+        default:
+            return esc_html__( 'Login failed. Please try again.', 'my-wp-plugin' );
+    }
 }
