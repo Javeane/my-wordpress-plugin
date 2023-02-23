@@ -935,3 +935,77 @@ if (isset($_POST['my_plugin_save_settings'])) {
   echo '<div class="notice notice-success is-dismissible"><p>'.__('Settings updated successfully.', 'my-plugin').'</p></div>';
 }
 ?>
+
+// 在 admin_menu 钩子中添加选项页面
+add_action( 'admin_menu', 'my_wp_plugin_settings_page' );
+function my_wp_plugin_settings_page() {
+    add_options_page(
+        'My WP Plugin Settings',
+        'My WP Plugin',
+        'manage_options',
+        'my_wp_plugin_settings',
+        'my_wp_plugin_settings_page_callback'
+    );
+}
+
+// 在选项页面回调函数中添加表单和字段
+function my_wp_plugin_settings_page_callback() {
+    ?>
+    <div class="wrap">
+        <h1>My WP Plugin Settings</h1>
+        <form method="post" action="options.php">
+            <?php
+            // 输出隐藏字段和设置部分
+            settings_fields( 'my_wp_plugin_settings_group' );
+            do_settings_sections( 'my_wp_plugin_settings_page' );
+            ?>
+            <?php submit_button( 'Save Changes' ); ?>
+        </form>
+    </div>
+    <?php
+}
+
+// 在 admin_init 钩子中注册设置和字段
+add_action( 'admin_init', 'my_wp_plugin_register_settings' );
+function my_wp_plugin_register_settings() {
+    // 注册一个设置部分
+    add_settings_section(
+        'my_wp_plugin_settings_section',
+        'My WP Plugin Settings',
+        'my_wp_plugin_settings_section_callback',
+        'my_wp_plugin_settings_page'
+    );
+
+    // 注册一个设置字段
+    add_settings_field(
+        'my_wp_plugin_setting_field',
+        'My Setting Field',
+        'my_wp_plugin_setting_field_callback',
+        'my_wp_plugin_settings_page',
+        'my_wp_plugin_settings_section'
+    );
+
+    // 注册设置并指定它们的设置部分和回调函数
+    register_setting(
+        'my_wp_plugin_settings_group',
+        'my_wp_plugin_setting',
+        'my_wp_plugin_setting_validation_callback'
+    );
+}
+
+// 设置部分的回调函数
+function my_wp_plugin_settings_section_callback() {
+    echo 'This is the description for the My WP Plugin Settings section.';
+}
+
+// 设置字段的回调函数
+function my_wp_plugin_setting_field_callback() {
+    $setting = get_option( 'my_wp_plugin_setting', '' );
+    echo '<input type="text" name="my_wp_plugin_setting" value="' . esc_attr( $setting ) . '" />';
+}
+
+// 设置字段的验证回调函数
+function my_wp_plugin_setting_validation_callback( $input ) {
+    $output = sanitize_text_field( $input );
+    return $output;
+}
