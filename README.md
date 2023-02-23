@@ -1,17 +1,18 @@
-describe
+**Describe**
 
 My WordPress Plugin is a WordPress plugin that adds user registration, login URL customization, and email verification features to Wordpress. It also includes social account login, user-defined avatar upload, and front-end CSS customization.
 
-feature
+**Feature**
+
 On the basis of customizing user registration and login URLs, My WordPress Plugin also hides the default user login address and background management entry URL of Wordpress to enhance the security of Wordpress sites.
 At the same time, My WordPress Plugin also provides Wordpress sites with functional configurations that allow users to log in with common social platform accounts such as Google, Microsoft, Tiktok, Twitter, and Facebook, and adds a Captcha security verification function for user registration and login.
 My WordPress Plugin also provides SMTP mail service configuration function for Wordpress site.
 
-Install
+**Install**
 
 Upload the My-Wordpress-Plugin folder to the /wp-content/plugins/ directory and activate the plugin through the Plugins menu in WordPress. Use the [my_wp_plugin] shortcode to display a signup form on the page.
 
-Frequently Asked Questions
+**Frequently Asked Questions**
 
 How to change front-end CSS？
 
@@ -26,13 +27,17 @@ To enable social logins for your Wordpress site, first you must create an API ke
 
 You can edit the email-template.php file located in the /includes/email/ directory. Alternatively, you can use a plugin like WP HTML Mail to create and customize email templates.
 
+**Changelog**
+
 1.0.0
 
 Initial release.
 
-Upgrade Notice
+**Upgrade Notice**
 
 None at this time.
+
+
 
 
 
