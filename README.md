@@ -38,8 +38,46 @@ Initial release.
 None at this time.
 
 
+**描述**
 
+My WordPress Plugin 是一个 WordPress插件，它为 Wordpress 增用户注册、登录 URL 自定义和电子邮件验证的功能，它还包括社交账号登录、用户自定义头像上传和前端 CSS 自定义。
 
+**特征**
+
+My WordPress Plugin在实现自定义用户注册、登录URL的基础上，还实现了隐藏Wordpress默认的用户登录地址和后台管理入口URL，以增强Wordpress站点的安全性。
+同时，My WordPress Plugin还为 Wordpress 站点提供了让用户使用Google、Microsoft、Tiktok、Twitter Facebook等常用社交平台账号登录的功能配置，并为用户注册登录加入了 Captcha 安全验证功能。
+My WordPress Plugin 也为Wordpress站点提供了SMTP邮件服务配置功能。
+
+**安装**
+
+将 My-Wordpress-Plugin 文件夹上传到 /wp-content/plugins/ 目录，通过 WordPress 中的“插件”菜单激活插件。 使用 [my_wp_plugin] 短代码在页面上显示注册表单。 
+
+**常见问题解答**
+
+·如何更改前端CSS
+
+您可以编辑位于 /includes/frontend/css/ 目录中的 frontend-style.css 文件。 
+或者，您可以创建自己的 CSS 文件并使用 wp_enqueue_style() 函数将其加入队列。
+
+·如何启用社交登录？
+
+要为Wordpress站点启用社交账号登录，首先您必须为要支持的社交网络创建 API 密钥。 然后，转到我的 WordPress 插件设置页面并输入每个社交网络的 API 密钥。
+
+·如何自定义电子邮件模板？
+
+您可以编辑位于 /includes/email/ 目录中的 email-template.php 文件。 或者，您可以使用 WP HTML Mail 之类的插件来创建和自定义电子邮件模板。
+
+**变更日志**
+
+1.0.0
+
+初始发行。
+
+**升级通知**
+
+目前没有。
+
+**插件概述**
 
 My Wordpress Plugin 是一个优化 Wordpress 基础功能的插件，希望通过代码的复用和减少插件数量，从而提升的运行效率。
 
