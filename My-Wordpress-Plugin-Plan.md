@@ -1,6 +1,6 @@
 <br>
 
-# **Wordpress 插件 My Wordpress Plugin 的功能需求<br>
+# **Wordpress 插件 My Wordpress Plugin 的功能需求**<br>
 
 My Wordpress Plugin 是一个优化 Wordpress 基础功能的插件，希望实现代码的复用性和减少 Wordpress 的插件数量，从而提升 Wordpress 的运行效率。<br>
 具体而言，插件包括以下6个方面的主要功能：<br>
