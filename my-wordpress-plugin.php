@@ -21,6 +21,13 @@ add_action('plugins_loaded', 'my_plugin_init');
 // 导入 PHPMailer 类文件
 require_once plugin_dir_path( __FILE__ ) . 'phpmailer/class.phpmailer.php';
 
+function my_wp_plugin_init() {
+  // 包含公共部分的代码
+  require_once plugin_dir_path(__FILE__) . 'public.php';
+
+  // 注册短代码
+  add_shortcode('my_wp_plugin_hello', 'my_wp_plugin_shortcode_callback');
+}
 
 if (!class_exists('My_WordPress_Plugin')) {
   class My_WordPress_Plugin {
