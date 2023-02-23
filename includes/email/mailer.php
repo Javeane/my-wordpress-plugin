@@ -1,112 +1,86 @@
 <?php
 /**
- * Plugin mailer module.
+ * Mailer Class
  *
- * This module provides the mail send for the plugin.
- *
- * @package my-wordpress-plugin
- * @subpackage Core
+ * @since      1.0.0
+ * @package    my-wordpress-plugin
+ * @subpackage my-wordpress-plugin/includes/email
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-  exit;
-}
+if (!class_exists('My_WP_Mailer')) {
 
+    class My_WP_Mailer
+    {
 
+        public static function send($to, $subject, $content)
+        {
+            $headers = self::get_headers();
+            $from_address = self::get_from_address();
+            $template = self::get_template();
+            $template_content = self::get_template_content($template, $content);
 
-namespace My_WP_Plugin\Includes\Email;
+            $subject = apply_filters('my_wp_mailer_subject', $subject);
+            $content = apply_filters('my_wp_mailer_content', $template_content);
 
-class Mailer {
-    /**
-     * The email sender.
-     *
-     * @var string
-     */
-    private $from_email;
+            wp_mail($to, $subject, $content, $headers, $attachments = array());
 
-    /**
-     * The email recipient(s).
-     *
-     * @var string|array
-     */
-    private $to_email;
-
-    /**
-     * The email subject.
-     *
-     * @var string
-     */
-    private $subject;
-
-    /**
-     * The email message body.
-     *
-     * @var string
-     */
-    private $body;
-
-    /**
-     * Additional headers for the email.
-     *
-     * @var array
-     */
-    private $headers;
-
-    /**
-     * Constructor.
-     *
-     * @param string       $to_email The recipient(s) of the email.
-     * @param string       $subject  The subject of the email.
-     * @param string       $body     The message body of the email.
-     * @param string       $from_email Optional. The sender of the email.
-     * @param array|string $headers Optional. Additional headers for the email.
-     */
-    public function __construct( $to_email, $subject, $body, $from_email = '', $headers = '' ) {
-        $this->from_email = $from_email;
-        $this->to_email   = $to_email;
-        $this->subject    = $subject;
-        $this->body       = $body;
-        $this->headers    = $headers;
-    }
-
-    /**
-     * Send the email.
-     *
-     * @return bool Whether the email was sent successfully.
-     */
-    public function send() {
-        // Check for required properties.
-        if ( empty( $this->from_email ) || empty( $this->to_email ) || empty( $this->subject ) || empty( $this->body ) ) {
-            return false;
+            return true;
         }
 
-        // Set the headers.
-        $headers = $this->headers;
-
-        // Set the from email header if not set.
-        if ( ! is_array( $headers ) ) {
-            $headers = array();
+        public static function get_from_address()
+        {
+            $from_address = get_option('my_wp_from_address');
+            return $from_address;
         }
 
-        if ( ! array_key_exists( 'From', $headers ) ) {
-            $headers['From'] = $this->from_email;
+        public static function get_headers()
+        {
+            $from_address = self::get_from_address();
+            $headers = array('From: ' . get_bloginfo('name') . ' <' . $from_address . '>');
+            $headers = apply_filters('my_wp_mailer_headers', $headers);
+
+            return $headers;
         }
 
-        // Set the content type header.
-        if ( ! array_key_exists( 'Content-Type', $headers ) ) {
-            $headers['Content-Type'] = 'text/html; charset=UTF-8';
+        public static function get_template()
+        {
+            $template = get_option('my_wp_email_template');
+            return $template;
         }
 
-        // Set the email recipients.
-        $to_email = $this->to_email;
+        public static function get_template_content($template, $content)
+        {
+            $template_path = MY_WP_PLUGIN_PATH . 'includes/email/templates/' . $template;
+            $template_content = file_get_contents($template_path);
+            $template_content = str_replace('{{content}}', $content, $template_content);
 
-        if ( is_array( $to_email ) ) {
-            $to_email = implode( ',', $to_email );
+            return $template_content;
         }
 
-        // Send the email.
-        $result = wp_mail( $to_email, $this->subject, $this->body, $headers );
+        public static function replace_template_content($content, $data)
+        {
+            foreach ($data as $key => $value) {
+                $content = str_replace('{{' . $key . '}}', $value, $content);
+            }
 
-        return $result;
+            return $content;
+        }
+        
+        public static function send_with_template($to, $subject, $template, $data)
+        {
+            $headers = self::get_headers();
+            $from_address = self::get_from_address();
+            $template_content = self::get_template_content($template, '');
+
+            $subject = apply_filters('my_wp_mailer_subject', $subject);
+            $content = apply_filters('my_wp_mailer_content', $template_content);
+
+            $replaced_content = self::replace_template_content($content, $data);
+
+            wp_mail($to, $subject, $replaced_content, $headers, $attachments = array());
+
+            return true;
+        }
+
     }
 }
