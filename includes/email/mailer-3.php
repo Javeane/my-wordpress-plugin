@@ -64,3 +64,23 @@ if (!class_exists('My_WP_Mailer')) {
             }
 
             return $content;
+        }
+        
+        public static function send_with_template($to, $subject, $template, $data)
+        {
+            $headers = self::get_headers();
+            $from_address = self::get_from_address();
+            $template_content = self::get_template_content($template, '');
+
+            $subject = apply_filters('my_wp_mailer_subject', $subject);
+            $content = apply_filters('my_wp_mailer_content', $template_content);
+
+            $replaced_content = self::replace_template_content($content, $data);
+
+            wp_mail($to, $subject, $replaced_content, $headers, $attachments = array());
+
+            return true;
+        }
+
+    }
+}
