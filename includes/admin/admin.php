@@ -931,3 +931,260 @@ class My_WordPress_Plugin_Admin {
 $my_wordpress_plugin_admin = new My_WordPress_Plugin_Admin();
 add_action( 'admin_menu', array( $my_wordpress_plugin_admin, 'add_admin_menu' ) );
 add_action( 'admin_init', array( $my_wordpress_plugin_admin, 'custom_verification_settings' ) );
+
+<?php
+
+/**
+ * The admin-specific functionality of the plugin.
+ *
+ * @link       https://yourwebsite.com
+ * @since      1.0.0
+ *
+ * @package    My_WordPress_Plugin
+ * @subpackage My_WordPress_Plugin/admin
+ */
+
+/**
+ * The admin-specific functionality of the plugin.
+ *
+ * Defines the plugin name, version, and hooks for the
+ * admin-specific functionality of the plugin.
+ *
+ * @package    My_WordPress_Plugin
+ * @subpackage My_WordPress_Plugin/admin
+ */
+class My_WordPress_Plugin_Admin {
+
+    /**
+     * The ID of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string    $plugin_name    The ID of this plugin.
+     */
+    private $plugin_name;
+
+    /**
+     * The version of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string    $version    The current version of this plugin.
+     */
+    private $version;
+
+    /**
+     * Initialize the class and set its properties.
+     *
+     * @since    1.0.0
+     * @param    string    $plugin_name       The name of the plugin.
+     * @param    string    $version    The version of this plugin.
+     */
+    public function __construct( $plugin_name, $version ) {
+
+        $this->plugin_name = $plugin_name;
+        $this->version = $version;
+
+    }
+
+    /**
+     * Register the stylesheets for the admin area.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_styles() {
+
+        wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/my-wordpress-plugin-admin.css', array(), $this->version, 'all' );
+
+    }
+
+    /**
+     * Register the JavaScript for the admin area.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_scripts() {
+
+        wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/my-wordpress-plugin-admin.js', array( 'jquery' ), $this->version, false );
+
+    }
+
+    /**
+     * Register the menu page for the admin area.
+     *
+     * @since    1.0.0
+     */
+    public function add_plugin_admin_menu() {
+
+        add_menu_page(
+            __( 'My WordPress Plugin', $this->plugin_name ),
+            __( 'My WP Plugin', $this->plugin_name ),
+            'manage_options',
+            $this->plugin_name,
+            array( $this, 'display_plugin_admin_page' ),
+            'dashicons-star-filled',
+            100
+        );
+
+    }
+
+    /**
+     * Display the menu page for the admin area.
+     *
+     * @since    1.0.0
+     */
+    public function display_plugin_admin_page() {
+
+        include_once 'partials/my-wordpress-plugin-admin-display.php';
+
+    }
+
+}
+// enqueue admin scripts
+function my_plugin_admin_scripts() {
+    wp_enqueue_script( 'my-plugin-admin-script', plugins_url( '/assets/js/admin.js', MY_PLUGIN_FILE ), array( 'jquery' ), MY_PLUGIN_VERSION );
+    wp_enqueue_style( 'my-plugin-admin-style', plugins_url( '/assets/css/admin.css', MY_PLUGIN_FILE ), array(), MY_PLUGIN_VERSION );
+}
+add_action( 'admin_enqueue_scripts', 'my_plugin_admin_scripts' );
+
+// add settings link to plugin page
+function my_plugin_add_settings_link( $links ) {
+    $settings_link = '<a href="options-general.php?page=my-plugin-settings">' . __( 'Settings', 'my-plugin' ) . '</a>';
+    array_push( $links, $settings_link );
+    return $links;
+}
+$plugin_settings_link = plugin_basename( MY_PLUGIN_FILE );
+add_filter( "plugin_action_links_$plugin_settings_link", 'my_plugin_add_settings_link' );
+
+// register settings
+function my_plugin_register_settings() {
+    register_setting( 'my-plugin-settings-group', 'my_plugin_option_1' );
+    register_setting( 'my-plugin-settings-group', 'my_plugin_option_2' );
+}
+add_action( 'admin_init', 'my_plugin_register_settings' );
+
+// add menu page
+function my_plugin_menu_page() {
+    add_options_page( __( 'My Plugin Settings', 'my-plugin' ), __( 'My Plugin', 'my-plugin' ), 'manage_options', 'my-plugin-settings', 'my_plugin_settings_page' );
+}
+add_action( 'admin_menu', 'my_plugin_menu_page' );
+
+// settings page
+function my_plugin_settings_page() {
+    ?>
+    <div class="wrap">
+        <h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
+        <form action="options.php" method="post">
+            <?php settings_fields( 'my-plugin-settings-group' ); ?>
+            <?php do_settings_sections( 'my-plugin-settings-group' ); ?>
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Option 1', 'my-plugin' ); ?></th>
+                    <td><input type="text" name="my_plugin_option_1" value="<?php echo esc_attr( get_option( 'my_plugin_option_1' ) ); ?>" /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Option 2', 'my-plugin' ); ?></th>
+                    <td><input type="text" name="my_plugin_option_2" value="<?php echo esc_attr( get_option( 'my_plugin_option_2' ) ); ?>" /></td>
+                </tr>
+            </table>
+            <?php submit_button(); ?>
+        </form>
+    </div>
+    <?php
+}
+/**
+ * Render the settings page for this plugin.
+ */
+function my_plugin_settings_page() {
+  // Retrieve plugin settings from the database.
+  $options = get_option( 'my_plugin_options' );
+
+  // Render the settings page.
+  ?>
+  <div class="wrap">
+    <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+    <form method="post" action="options.php">
+      <?php
+        // Render the nonce field for security.
+        settings_fields( 'my_plugin_options' );
+
+        // Render the settings section and fields.
+        do_settings_sections( 'my_plugin_settings' );
+
+        // Render the submit button.
+        submit_button();
+      ?>
+    </form>
+  </div>
+  <?php
+}
+
+/**
+ * Register the settings for this plugin.
+ */
+function my_plugin_register_settings() {
+  // Register a setting for the API key.
+  register_setting(
+    'my_plugin_options',
+    'my_plugin_options',
+    array(
+      'type' => 'array',
+      'sanitize_callback' => 'my_plugin_sanitize_options',
+      'default' => array(
+        'api_key' => '',
+      ),
+    )
+  );
+
+  // Add a section for the plugin settings.
+  add_settings_section(
+    'my_plugin_settings_section',
+    esc_html__( 'Plugin Settings', 'my-plugin' ),
+    'my_plugin_settings_section_callback',
+    'my_plugin_settings'
+  );
+
+  // Add a field for the API key.
+  add_settings_field(
+    'my_plugin_api_key',
+    esc_html__( 'API Key', 'my-plugin' ),
+    'my_plugin_api_key_callback',
+    'my_plugin_settings',
+    'my_plugin_settings_section'
+  );
+}
+
+/**
+ * Sanitize the plugin options.
+ *
+ * @param array $options The options to sanitize.
+ * @return array The sanitized options.
+ */
+function my_plugin_sanitize_options( $options ) {
+  // Sanitize the API key.
+  if ( isset( $options['api_key'] ) ) {
+    $options['api_key'] = sanitize_text_field( $options['api_key'] );
+  }
+
+  return $options;
+}
+
+/**
+ * Render the plugin settings section.
+ */
+function my_plugin_settings_section_callback() {
+  // This function intentionally left blank.
+}
+
+/**
+ * Render the API key field.
+ */
+function my_plugin_api_key_callback() {
+  // Retrieve plugin settings from the database.
+  $options = get_option( 'my_plugin_options' );
+
+  // Render the API key field.
+  ?>
+  <input type="text" name="my_plugin_options[api_key]" value="<?php echo esc_attr( $options['api_key'] ); ?>" class="regular-text">
+  <?php
+}
