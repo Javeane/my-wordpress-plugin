@@ -101,15 +101,15 @@ My Wordpress Plugin 是一个优化 Wordpress 基础功能的插件，希望通�
 # **My Wordpress Plugin 的文件目录结构**
 
  my-wordpress-plugin/<br>    
-├── includes/                               ··包含插件的主要功能，分为后台和前台代码。<br>
-│   ├── admin/                              ··包含插件后台管理菜单和插件设置等页面的代码逻辑。<br>
-│   │   ├── admin.php                // 后台管理页面的主要代码逻辑<br>
-│   │   ├── menu.php                 // 自定义 WordPress 菜单的代码逻辑<br>
-│   │   └── settings.php              // 插件的设置页面代码逻辑<br>
-│   ├── public/                             ··包含插件前台主要功能如短代码和前端显示等代码逻辑。<br>
-│   │   ├── public.php                 // 插件的前台主要代码逻辑<br>
-│   │   └── shortcode.php           // 插件的短代码代码逻辑<br>
-│   ├── core                                ··包含包括登录、注册、社交登录和用户验证等插件的主要功能代码逻辑。<br>
+├── includes/　　　　　　　　　··包含插件的主要功能，分为后台和前台代码。<br>
+│   ├── admin/　　　　　　　　··包含插件后台管理菜单和插件设置等页面的代码逻辑。<br>
+│   │   ├── admin.php　　　　　// 后台管理页面的主要代码逻辑<br>
+│   │   ├── menu.php　　　　　// 自定义 WordPress 菜单的代码逻辑<br>
+│   │   └── settings.php　　　　// 插件的设置页面代码逻辑<br>
+│   ├── public/　　　　　　　　··包含插件前台主要功能如短代码和前端显示等代码逻辑。<br>
+│   │   ├── public.php　　　　　// 插件的前台主要代码逻辑<br>
+│   │   └── shortcode.php　　　// 插件的短代码代码逻辑<br>
+│   ├── core　　　　　　　　　··包含包括登录、注册、社交登录和用户验证等插件的主要功能代码逻辑。<br>
 │   │   ├── login.php                  // 插件的登录功能代码逻辑<br>
 │   │   ├── register.php              // 插件的注册功能代码逻辑<br>
 │   │   ├── social-login.php        // 插件的社交登录功能代码逻辑<br>
