@@ -1012,3 +1012,32 @@ function my_wp_plugin_setting_validation_callback( $input ) {
     $output = sanitize_text_field( $input );
     return $output;
 }
+function my_wordpress_plugin_register_settings() {
+  register_setting('my_wordpress_plugin_settings', 'my_wordpress_plugin_ajaxurl');
+}
+add_action('admin_init', 'my_wordpress_plugin_register_settings');
+
+function my_wordpress_plugin_add_settings_page() {
+  add_options_page('My Wordpress Plugin Settings', 'My Wordpress Plugin', 'manage_options', 'my_wordpress_plugin', 'my_wordpress_plugin_settings_page');
+}
+add_action('admin_menu', 'my_wordpress_plugin_add_settings_page');
+
+function my_wordpress_plugin_settings_page() {
+  $ajaxurl = admin_url('admin-ajax.php');
+  ?>
+  <div class="wrap">
+    <h1>My Wordpress Plugin Settings</h1>
+    <form method="post" action="options.php">
+      <?php settings_fields('my_wordpress_plugin_settings'); ?>
+      <?php do_settings_sections('my_wordpress_plugin_settings'); ?>
+      <table class="form-table">
+        <tr valign="top">
+          <th scope="row">Ajax URL</th>
+          <td><input type="text" name="my_wordpress_plugin_ajaxurl" value="<?php echo esc_attr($ajaxurl); ?>" /></td>
+        </tr>
+      </table>
+      <?php submit_button(); ?>
+    </form>
+  </div>
+  <?php
+}
