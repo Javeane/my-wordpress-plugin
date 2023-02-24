@@ -118,5 +118,89 @@ $('#toggle-password').click(function() {
 $(document).ready(function() {
     // 页面加载完成后执行的代码
 });
+// Add a menu tab and a page to display plugin settings
+function my_wp_plugin_add_settings_page() {
+  // Create the menu tab
+  var settings_tab = $('<a href="#my-wp-plugin-settings-page">My Plugin Settings</a>');
+  $('ul#wp-admin-bar-root-default').append($('<li></li>').append(settings_tab));
 
-           
+  // Create the settings page
+  var settings_page = $('<div id="my-wp-plugin-settings-page"></div>').hide();
+  $('div.wrap').append(settings_page);
+
+  // Display the settings page when the menu tab is clicked
+  settings_tab.click(function(event) {
+    event.preventDefault();
+    settings_page.show();
+    $('div.wrap > h1').text('My Plugin Settings');
+  });
+
+  // Add some content to the settings page
+  settings_page.append($('<p>Here you can configure your plugin settings.</p>'));
+  settings_page.append($('<label for="my-wp-plugin-api-key">API Key</label>'));
+  settings_page.append($('<input type="text" id="my-wp-plugin-api-key" name="my_wp_plugin_api_key">'));
+  settings_page.append($('<input type="submit" value="Save">'));
+}
+$(document).ready(function() {
+  my_wp_plugin_add_settings_page();
+});
+// Register a cron job to clean up plugin data once a day
+function my_wp_plugin_cleanup() {
+  // Add your cleanup code here
+}
+add_action('my_wp_plugin_cleanup_hook', 'my_wp_plugin_cleanup');
+wp_schedule_event(time(), 'daily', 'my_wp_plugin_cleanup_hook');
+
+// Register the widget
+function my_wp_plugin_register_widget() {
+  register_widget('My_WP_Plugin_Widget');
+}
+add_action('widgets_init', 'my_wp_plugin_register_widget');
+
+// Define the widget class
+class My_WP_Plugin_Widget extends WP_Widget {
+    public function __construct() {
+        parent::__construct(
+            'my_wp_plugin_widget',
+            __( 'My WordPress Plugin Widget', 'my-wp-plugin' ),
+            array( 'description' => __( 'Displays some information about My WordPress Plugin', 'my-wp-plugin' ) )
+        );
+    }
+
+    public function widget( $args,$instance ) {
+
+// Widget output
+echo $args['before_widget'];
+echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
+echo '<p>' . $instance['content'] . '</p>';
+echo $args['after_widget'];
+}
+public function form( $instance ) {
+    // Widget form fields
+    $title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'My WordPress Plugin', 'my-wp-plugin' );
+    $content = ! empty( $instance['content'] ) ? $instance['content'] : __( 'This is some information about My WordPress Plugin', 'my-wp-plugin' );
+    ?>
+    <p>
+        <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
+        <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
+    </p>
+    <p>
+        <label for="<?php echo $this->get_field_id( 'content' ); ?>"><?php _e( 'Content:' ); ?></label>
+        <textarea class="widefat" id="<?php echo $this->get_field_id( 'content' ); ?>" name="<?php echo $this->get_field_name( 'content' ); ?>"><?php echo esc_attr( $content ); ?></textarea>
+    </p>
+    <?php
+}
+
+public function update( $new_instance, $old_instance ) {
+    // Update widget fields
+    $instance = array();
+    $instance['title'] = ! empty( $new_instance['title'] ) ? sanitize_text_field( $new_instance['title'] ) : '';
+    $instance['content'] = ! empty( $new_instance['content'] ) ? sanitize_text_field( $new_instance['content'] ) : '';
+    return $instance;
+}
+}
+// Register widget
+function my_wp_plugin_register_widget() {
+register_widget( 'My_WP_Plugin_Widget' );
+}
+add_action( 'widgets_init', 'my_wp_plugin_register_widget' );
