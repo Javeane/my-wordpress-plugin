@@ -1,0 +1,109 @@
+/**
+ * This file is responsible for frontend styles
+ *
+ * @package My_Wordpress_Plugin
+ */
+
+/* Exit if accessed directly. */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/* General WordPress styles */
+
+/* Remove margin top for the main content area. */
+#primary {
+	margin-top: 0;
+}
+
+/* Add styles for the post excerpt. */
+.entry-summary {
+	font-size: 1.2rem;
+	margin-bottom: 1.5rem;
+}
+
+/* Add styles for the post title. */
+.entry-title {
+	font-size: 2rem;
+	margin-bottom: 1rem;
+}
+
+/* Add styles for the post meta. */
+.entry-meta {
+	font-size: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+/* Add styles for the post content. */
+.entry-content {
+	font-size: 1.2rem;
+	line-height: 1.6;
+	margin-bottom: 3rem;
+}
+
+/* Add styles for the page header. */
+.page-header {
+	margin-bottom: 3rem;
+}
+
+/* Add styles for the page title. */
+.page-title {
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+}
+
+/* Add styles for the page content. */
+.page-content {
+	font-size: 1.2rem;
+	line-height: 1.6;
+	margin-bottom: 3rem;
+}
+
+/* Add styles for the sidebar. */
+.widget-area {
+	margin-bottom: 3rem;
+}
+
+/* Add styles for the sidebar widget title. */
+.widget-title {
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+/* Custom styles for My WordPress Plugin */
+
+/* Add styles for the plugin's frontend content. */
+.my-wp-plugin-frontend {
+	margin-bottom: 3rem;
+}
+
+/* Add styles for the plugin's frontend title. */
+.my-wp-plugin-frontend-title {
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+}
+
+/* Add styles for the plugin's frontend content. */
+.my-wp-plugin-frontend-content {
+	font-size: 1.2rem;
+	line-height: 1.6;
+	margin-bottom: 3rem;
+}
+
+/* Add styles for the plugin's frontend button. */
+.my-wp-plugin-frontend-button {
+	display: inline-block;
+	background-color: #0073aa;
+	color: #fff;
+	font-size: 1.2rem;
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	text-decoration: none;
+	margin-right: 1rem;
+	margin-bottom: 1rem;
+}
+
+/* Add hover styles for the plugin's frontend button. */
+.my-wp-plugin-frontend-button:hover {
+	background-color: #005587;
+}
