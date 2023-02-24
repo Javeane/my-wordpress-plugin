@@ -22,6 +22,46 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 
 //第一部分：删除插件创建的数据库表
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) && ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+    exit;
+}
+
+// Check if it is a multisite WordPress. //检查插件数据
+if ( is_multisite() ) {
+
+    global $wpdb;
+    $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+
+    if ( $blog_ids ) {
+        foreach ( $blog_ids as $blog_id ) {
+            switch_to_blog( $blog_id );
+            // Delete plugin data for each site.
+            delete_option( 'my_wp_plugin_option' );
+            // delete custom tables for each site if any.
+            // $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}my_wp_plugin_table" );
+        }
+        restore_current_blog();
+    }
+} else {
+    // Delete plugin data for single site.
+    delete_option( 'my_wp_plugin_option' );
+    // delete custom tables if any.
+    // global $wpdb;
+    // $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}my_wp_plugin_table" );
+}
+
+// Delete plugin options.
+delete_option( 'my_wp_plugin_option' );
+
+// Delete user meta data if any.
+// delete_metadata( 'user', 0, 'my_wp_plugin_user_meta', '', true );
+
+// Remove the user meta data from all users if any.
+// global $wpdb;
+// $wpdb->query( "DELETE FROM $wpdb->usermeta WHERE meta_key = 'my_wp_plugin_user_meta'" );
+
+
 // 定义卸载函数
 function my_plugin_uninstall() {
     global $wpdb;

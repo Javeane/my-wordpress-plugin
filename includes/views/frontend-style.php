@@ -16,12 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function my_wp_plugin_enqueue_frontend_scripts() {
 	// Enqueue main stylesheet.
-	wp_enqueue_style( 'my-wp-plugin-frontend-style', MY_WP_PLUGIN_PLUGIN_URL . '/assets/css/frontend-style.css', array(), MY_WP_PLUGIN_VERSION );
+	wp_enqueue_style( 'my-wp-plugin-frontend-style', plugins_url( '/assets/css/frontend-style.css', MY_WP_PLUGIN_PLUGIN_FILE ), array(), MY_WP_PLUGIN_VERSION );
 
 	// Enqueue jQuery library.
 	wp_enqueue_script( 'jquery' );
 
 	// Enqueue main JavaScript file.
-	wp_enqueue_script( 'my-wp-plugin-frontend-script', MY_WP_PLUGIN_PLUGIN_URL . '/assets/js/frontend-script.js', array( 'jquery' ), MY_WP_PLUGIN_VERSION, true );
+	wp_enqueue_script( 'my-wp-plugin-frontend-script', plugins_url( '/assets/js/frontend-script.js', MY_WP_PLUGIN_PLUGIN_FILE ), array( 'jquery' ), MY_WP_PLUGIN_VERSION, true );
 }
 add_action( 'wp_enqueue_scripts', 'my_wp_plugin_enqueue_frontend_scripts' );

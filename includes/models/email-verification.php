@@ -99,3 +99,11 @@ public function verify_email( $user_id, $token ) {
 	}
 	return false;
 }
+global $wpdb;
+$table_name = $wpdb->prefix . 'email_verification';
+$data = array(
+    'user_id' => $user_id,
+    'verification_code' => $verification_code,
+    'created_at' => current_time('mysql')
+);
+$wpdb->insert($table_name, $data, array('%d', '%s', '%s'));

@@ -20,7 +20,7 @@ function my_wp_plugin_add_menu_item() {
         __('Dashboard', 'my-wp-plugin'),
         __('Dashboard', 'my-wp-plugin'),
         'manage_options',
-        'my-wp-plugin'
+        'My Wordpress Plugin'
     );
 
     // Add a submenu item for the plugin settings page.

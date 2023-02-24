@@ -1,13 +1,17 @@
 <?php
 /**
  * This file contains the Public class
- */
-
-/**
+ *
+ * @package my-wordpress-plugin
+ *
  * The Public class contains code for the plugin's public-facing functionality
  */
-class Public {
 
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+class Public {
     /**
      * The constructor function initializes the class
      */
@@ -15,6 +19,37 @@ class Public {
         add_action( 'init', array( $this, 'register_shortcodes' ) );
         add_action( 'wp_enqueue_scripts', array( $this, 'register_styles_and_scripts' ) );
     }
+
+    /**
+     * Enqueue scripts and styles
+     */
+    function my_wordpress_plugin_enqueue_scripts()
+    {
+      wp_enqueue_style('my-wordpress-plugin', plugins_url('public/css/style.css', dirname(__FILE__)), array(), '1.0.0', 'all');
+      wp_enqueue_script('my-wordpress-plugin', plugins_url('public/js/script.js', dirname(__FILE__)), array('jquery'), '1.0.0', true);
+}
+    add_action('wp_enqueue_scripts', 'my_wordpress_plugin_enqueue_scripts');
+
+/**
+ * Shortcode for displaying plugin content
+ */
+function my_wordpress_plugin_shortcode($atts)
+{
+    // Shortcode attributes
+    $atts = shortcode_atts(array(
+        'title' => 'My Wordpress Plugin',
+        'text' => 'This is my Wordpress plugin.'
+    ), $atts, 'my_wordpress_plugin');
+
+    // Shortcode output
+    $output = '<div class="my-wordpress-plugin">';
+    $output .= '<h2>' . esc_html($atts['title']) . '</h2>';
+    $output .= '<p>' . esc_html($atts['text']) . '</p>';
+    $output .= '</div>';
+
+    return $output;
+}
+add_shortcode('my_wordpress_plugin', 'my_wordpress_plugin_shortcode');
 
     /**
      * The register_shortcodes function registers the plugin's shortcodes
@@ -116,4 +151,3 @@ class Public {
     }
 
 }
-

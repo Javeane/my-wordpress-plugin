@@ -1013,7 +1013,7 @@ function my_wp_plugin_setting_validation_callback( $input ) {
     return $output;
 }
 function my_wordpress_plugin_register_settings() {
-  register_setting('my_wordpress_plugin_settings', 'my_wordpress_plugin_ajaxurl');
+  register_setting('my_wordpress_plugin_settings_group', 'my_wordpress_plugin_settings'); // register_setting('my_wordpress_plugin_settings', 'my_wordpress_plugin_ajaxurl');
 }
 add_action('admin_init', 'my_wordpress_plugin_register_settings');
 

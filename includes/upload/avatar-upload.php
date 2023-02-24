@@ -41,6 +41,11 @@ function my_wp_plugin_process_avatar_upload() {
 	// Allowed file types.
 	$allowed_types = array( 'jpg', 'jpeg', 'png', 'gif' );
 
+	// Check if a file was uploaded.
+	if ( empty( $_FILES ) || ! isset( $_FILES['avatar'] ) || ! is_uploaded_file( $_FILES['avatar']['tmp_name'] ) ) {
+		wp_send_json_error( __( 'No file was uploaded.', 'my-wp-plugin' ) );
+	}
+
 	// Check if the file type is allowed.
 	if ( ! in_array( $ext, $allowed_types ) ) {
 		wp_send_json_error( __( 'Only jpg, jpeg, png and gif file types are allowed.', 'my-wp-plugin' ) );

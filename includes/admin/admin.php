@@ -22,7 +22,7 @@ defined('ABSPATH') or die('No script kiddies please!');
 //第一部分：定义 WordPress 后台管理页面
 
 // 添加插件设置菜单项
-add_action('admin_menu', 'my_wordpress_plugin_add_admin_menu');
+add_action('admin_menu', 'My WordPress Plugin'); //add_action('admin_menu', 'my_wordpress_plugin_add_admin_menu');
 
 function my_wordpress_plugin_add_admin_menu() {
     add_menu_page(

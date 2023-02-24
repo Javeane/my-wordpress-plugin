@@ -9,15 +9,6 @@
  * @subpackage My_WordPress_Plugin/includes/core
  */
 
-/**
- * The login-specific functionality of the plugin.
- *
- * Defines the plugin name, version, and hooks for how to
- * authenticate users to the WordPress site.
- *
- * @package    My_WordPress_Plugin
- * @subpackage My_WordPress_Plugin/includes/core
- */
 class My_WordPress_Plugin_Login {
 
 	/**
@@ -147,6 +138,19 @@ class My_WordPress_Plugin_Login {
 
 	// Return the login form.
 	return $output;
+}
+
+function login($username, $password) {
+    $creds = array(
+        'user_login' => $username,
+        'user_password' => $password,
+        'remember' => true
+    );
+    $user = wp_signon($creds, false);
+    if (is_wp_error($user)) {
+        return $user->get_error_message();
+    }
+    return true;
 }
 
 /**
