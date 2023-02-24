@@ -2,8 +2,8 @@
 /**
  * Register template for My Wordpress Plugin
  *
- * This template file is responsible for displaying the user login page,
- * including the login form, form validation, and success/failure messages.
+ * This template file is responsible for displaying the register login page,
+ * including the register form, form validation, and success/failure messages.
  * It also provides the ability to redirect to other pages.
  *
  * @package My_Wordpress_Plugin

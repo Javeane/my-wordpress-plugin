@@ -107,3 +107,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 .my-wp-plugin-frontend-button:hover {
 	background-color: #005587;
 }
+
+.verification-message {
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  border-radius: 4px;
+  color: #a94442;
+  margin-bottom: 15px;
+  padding: 15px;
+}
