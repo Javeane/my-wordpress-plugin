@@ -3,6 +3,7 @@
  * Register form rendering and submission
  *
  * @package my-wordpress-plugin
+ * @subpackage Core
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
