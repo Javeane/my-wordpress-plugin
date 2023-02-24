@@ -1,1 +1,98 @@
-#wp-user-profile-avatar-errors,#wp-user-profile-avatar-readable-size-error,.wp-user-profile-avatar-error{color:#c00!important;font-weight:700!important}#wp-user-profile-avatar-readable-size-success,#wp-user-profile-avatar-success,.wp-user-profile-avatar-success{color:#179a17!important;font-weight:700!important}#wp-user-profile-avatar-readable-size-error,#wp_user_profile_avatar_undo_button{display:none}#wp_user_profile_avatar_preview,#wp_user_profile_avatar_preview-existing{margin-right:10px}#wp_user_profile_avatar_preview,#wp_user_profile_avatar_preview-existing,#wp_user_profile_avatar_thumbnail,#wp_user_profile_avatar_thumbnail-existing{display:inline-block;text-align:center;vertical-align:top}#wp_user_profile_avatar_preview img,#wp_user_profile_avatar_preview-existing img,#wp_user_profile_avatar_thumbnail img,#wp_user_profile_avatar_thumbnail-existing img{max-height:96px;border:1px solid #dfdfdf;display:block}.widget_wp_user_profile_avatar #wp_user_profile_avatar_preview img,.widget_wp_user_profile_avatar #wp_user_profile_avatar_preview-existing img,.widget_wp_user_profile_avatar #wp_user_profile_avatar_thumbnail img,.widget_wp_user_profile_avatar #wp_user_profile_avatar_thumbnail-existing img{max-height:64px}.defaultavatarpicker #wp_user_profile_avatar_preview,.defaultavatarpicker #wp_user_profile_avatar_preview-existing{width:32px;height:32px;margin-right:0;display:inline-block;overflow:hidden;vertical-align:middle}.defaultavatarpicker #wp_user_profile_avatar_preview img,.defaultavatarpicker #wp_user_profile_avatar_preview-existing img{width:32px;height:auto;border:0}#wp-user-profile-avatar-edit #wp_user_profile_avatar_remove,#wp-user-profile-avatar-edit #wp_user_profile_avatar_undo,#wp-user-profile-avatar-edit-attachment{margin-left:10px!important}#wp-user-profile-avatar-slider{width:22.75em}#wp-user-profile-avatar-upload-messages span{display:block}.wp-user-profile-avatar-hide{display:none!important}.wp-user-profile-avatar-no-avatars{display:none}.wp-user-profile-avatar .alignleft{float:left;margin:.3rem 2rem 2rem 2rem}.wp-user-profile-avatar .alignright{float:right;margin:.3rem 0 2rem 2rem}.wp-user-profile-avatar .aligncenter{margin-bottom:4rem;margin-top:4rem;margin-left:auto;margin-right:auto;text-align:center}.wp-user-profile-avatar .alignnone{margin-bottom:4rem;margin-top:4rem;margin-left:auto;margin-right:auto;text-align:center}
+/**
+ * My WordPress Plugin CSS styles
+ *
+ * @package My_WordPress_Plugin
+ */
+
+/* Admin page styles */
+.my-wp-plugin-admin-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.my-wp-plugin-admin-page h1 {
+  margin-top: 0;
+  font-size: 32px;
+}
+
+.my-wp-plugin-admin-page form {
+  margin-bottom: 20px;
+}
+
+.my-wp-plugin-admin-page .notice {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-left: 4px solid #0073aa;
+}
+
+.my-wp-plugin-admin-page .notice.error {
+  border-left-color: #dc3232;
+}
+
+.my-wp-plugin-admin-page .notice.success {
+  border-left-color: #46b450;
+}
+
+.my-wp-plugin-admin-page label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.my-wp-plugin-admin-page input[type="text"],
+.my-wp-plugin-admin-page input[type="password"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+.my-wp-plugin-admin-page input[type="submit"] {
+  background-color: #0073aa;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Frontend widget styles */
+.my-wp-plugin-widget {
+  margin-bottom: 20px;
+}
+
+.my-wp-plugin-widget h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.my-wp-plugin-widget .avatar {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+}
+
+.my-wp-plugin-widget .description {
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* Responsive styles */
+@media (max-width: 767px) {
+  .my-wp-plugin-admin-page {
+    padding: 10px;
+  }
+
+  .my-wp-plugin-admin-page h1 {
+    font-size: 24px;
+  }
+}
