@@ -11,12 +11,24 @@
 
 defined('ABSPATH') or die('No script kiddies please!');
 
+require_once plugin_dir_path(__FILE__) . 'includes/constants.php';
+require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
+
 function my_plugin_init() {
     global $email_verification_model;
     require_once(plugin_dir_path(__FILE__) . 'includes/models/email-verification.php');
     $email_verification_model = new Email_Verification_Model();
 }
 add_action('plugins_loaded', 'my_plugin_init');
+
+add_menu_page(
+    'My WordPress Plugin Settings',
+    'My WordPress Plugin',
+    'manage_options',
+    'my_wordpress_plugin',
+    'my_wordpress_plugin_settings_page'
+);
+
 
 // 导入 PHPMailer 类文件
 require_once plugin_dir_path( __FILE__ ) . 'phpmailer/class.phpmailer.php';
@@ -103,7 +115,13 @@ public function add_settings_link($links) {
 /**
  * Register plugin assets
  */
-private function register_assets() {
+
+//private function register_assets() {
+//  add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
+//  add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+//}
+
+public function register_assets() {
   add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
   add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
 }
