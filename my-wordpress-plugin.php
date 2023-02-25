@@ -11,6 +11,7 @@
 
 defined('ABSPATH') or die('No script kiddies please!');
 
+require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 require_once plugin_dir_path(__FILE__) . 'includes/constants.php';
 require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 
@@ -44,6 +45,8 @@ function my_wp_plugin_init() {
 if (!class_exists('My_WordPress_Plugin')) {
   class My_WordPress_Plugin {
 
+  private string $plugin_name;
+  private string $version;
     public function __construct() {
       $this->define_constants();
       $this->register_assets();
@@ -116,15 +119,33 @@ public function add_settings_link($links) {
  * Register plugin assets
  */
 
+private function register_assets(): void {
+//private function register_assets() {
+  add_action('wp_enqueue_scripts', function() {
+    wp_enqueue_style('my-plugin-public', plugins_url('public.css', __FILE__));
+    wp_enqueue_script('my-plugin-public', plugins_url('public.js', __FILE__));
+  });
+
+  add_action('admin_enqueue_scripts', function() {
+    wp_enqueue_style('my-plugin-admin', plugins_url('admin.css', __FILE__));
+    wp_enqueue_script('my-plugin-admin', plugins_url('admin.js', __FILE__));
+  });
+}
+
 //private function register_assets() {
 //  add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
 //  add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
 //}
 
-public function register_assets() {
-  add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
-  add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
-}
+//public function register_assets() {
+//  add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
+//  add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+//}
+
+//private function register_assets(): void {
+//  add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
+//  add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+//}
 
 /**
  * Enqueue admin assets
