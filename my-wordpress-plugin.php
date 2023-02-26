@@ -58,7 +58,7 @@ if (!class_exists('My_WordPress_Plugin')) {
 /**
  * Define plugin constants
  */
-private function define_constants() {
+private function define_constants(): void {
   define('MY_PLUGIN_PATH', plugin_dir_path(__FILE__));
   define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
   define('MY_PLUGIN_TEMPLATE_PATH', MY_PLUGIN_PATH . 'templates/');
@@ -68,7 +68,7 @@ private function define_constants() {
 /**
  * Register plugin assets
  */
-private function register_assets(): void {
+private function register_assets() {
   add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
   add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
   }
