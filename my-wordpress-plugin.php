@@ -68,7 +68,7 @@ private function define_constants() {
 /**
  * Register plugin assets
  */
-private function register_assets() {
+private function register_assets(): void {
   add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
   add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
   }
