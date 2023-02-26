@@ -49,13 +49,13 @@ class My_Plugin {
     }
 
     public function enqueue_public_assets() {
-        wp_enqueue_style( 'my-plugin-public-style', MY_PLUGIN_ASSETS_URL . 'css/public-style.css', array(), '1.0.0', 'all' );
-        wp_enqueue_script( 'my-plugin-public-script', MY_PLUGIN_ASSETS_URL . 'js/public-script.js', array( 'jquery' ), '1.0.0', true );
+        wp_enqueue_style( 'my-plugin-public-style', MY_PLUGIN_ASSETS_URL . 'css/style.css', array(), '1.0.0', 'all' );
+        wp_enqueue_script( 'my-plugin-public-script', MY_PLUGIN_ASSETS_URL . 'js/main.js', array( 'jquery' ), '1.0.0', true );
     }
 
     public function enqueue_admin_assets() {
         wp_enqueue_style( 'my-plugin-admin-style', MY_PLUGIN_ASSETS_URL . 'css/admin-style.css', array(), '1.0.0', 'all' );
-        wp_enqueue_script( 'my-plugin-admin-script', MY_PLUGIN_ASSETS_URL . 'js/admin-script.js', array( 'jquery' ), '1.0.0', true );
+        wp_enqueue_script( 'my-plugin-admin-script', MY_PLUGIN_ASSETS_URL . 'js/admin.js', array( 'jquery' ), '1.0.0', true );
     }
 
     private function register_assets() {
