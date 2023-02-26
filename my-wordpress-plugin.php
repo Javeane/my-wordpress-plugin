@@ -14,6 +14,8 @@ defined('ABSPATH') or die('No script kiddies please!');
 require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 require_once plugin_dir_path(__FILE__) . 'includes/constants.php';
 require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
+//引入 class-my-plugin.php 文件
+require_once MY_PLUGIN_PATH . 'class-my-plugin.php';
 
 function my_plugin_init() {
     global $email_verification_model;
