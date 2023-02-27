@@ -8,14 +8,7 @@
  * @subpackage Core
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
-/**
- * My_WordPress_Plugin_Email_Verification class.
- */
-class My_WordPress_Plugin_Email_Verification {
+class Email_Verification_Model {
 
 	/**
 	 * Verification token lifetime (in seconds).
@@ -65,17 +58,18 @@ class My_WordPress_Plugin_Email_Verification {
 		$token = wp_generate_password( 32, false );
 		$this->store_token( $user_id, $token );
 		return $token;
-	}
-/**
- * Stores the verification token in the database for the given user ID.
- *
- * @param int    $user_id User ID.
- * @param string $token   Verification token.
- */
-public function store_token( $user_id, $token ) {
-	update_user_meta( $user_id, 'email_verification_token', $token );
-	update_user_meta( $user_id, 'email_verification_token_created_at', time() );
-}
+		}
+
+	/**
+	 * Stores the verification token in the database for the given user ID.
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $token   Verification token.
+	 */
+	public function store_token( $user_id, $token ) {
+		update_user_meta( $user_id, 'email_verification_token', $token );
+		update_user_meta( $user_id, 'email_verification_token_created_at', time() );
+		}
 
 /**
  * Verifies the email address for the given user ID and token.
@@ -86,24 +80,25 @@ public function store_token( $user_id, $token ) {
  * @return bool True if the email address was successfully verified, false otherwise.
  */
 public function verify_email( $user_id, $token ) {
-	$stored_token = get_user_meta( $user_id, 'email_verification_token', true );
-	if ( $stored_token === $token ) {
-		$token_creation_time = get_user_meta( $user_id, 'email_verification_token_created_at', true );
-		$time_difference = time() - $token_creation_time;
-		if ( $time_difference <= $this->token_lifetime ) {
-			update_user_meta( $user_id, 'email_verified', true );
-			delete_user_meta( $user_id, 'email_verification_token' );
-			delete_user_meta( $user_id, 'email_verification_token_created_at' );
-			return true;
-		}
+    $stored_token = get_user_meta( $user_id, 'email_verification_token', true );
+    if ( $stored_token === $token ) {
+        $token_creation_time = get_user_meta( $user_id, 'email_verification_token_created_at', true );
+        $time_difference = time() - $token_creation_time;
+        if ( $time_difference <= 86400 ) {
+            // Email verification token is valid for 24 hours.
+            delete_user_meta( $user_id, 'email_verification_token' );
+            delete_user_meta( $user_id, 'email_verification_token_created_at' );
+            update_user_meta( $user_id, 'email_verified', true );
+            return true;
+        } else {
+            // Email verification token has expired.
+            delete_user_meta( $user_id, 'email_verification_token' );
+            delete_user_meta( $user_id, 'email_verification_token_created_at' );
+            return false;
+        	}
+    } else {
+        // Invalid email verification token.
+        return false;
+    	}
 	}
-	return false;
 }
-global $wpdb;
-$table_name = $wpdb->prefix . 'email_verification';
-$data = array(
-    'user_id' => $user_id,
-    'verification_code' => $verification_code,
-    'created_at' => current_time('mysql')
-);
-$wpdb->insert($table_name, $data, array('%d', '%s', '%s'));

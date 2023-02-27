@@ -11,12 +11,14 @@
 
 defined('ABSPATH') or die('No script kiddies please!');
 
+define( 'MY_PLUGIN_PATH', plugin_dir_path( __FILE__ ) ); //定义常量
+
 require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 require_once plugin_dir_path(__FILE__) . 'includes/constants.php';
 require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 
 //引入 class-my-plugin.php 文件
-require_once MY_PLUGIN_PATH . 'class-my-plugin.php';
+require_once MY_PLUGIN_PATH . 'includes/class-my-plugin.php';
 
 function my_plugin_init() {
     global $email_verification_model;
@@ -65,8 +67,7 @@ if (!class_exists('My_WordPress_Plugin')) {
       $this->register_upload();
       add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
       }
-  }
-
+      
 /**
  * 定义插件常量
  */
@@ -126,7 +127,6 @@ public function add_settings_link($links) {
   array_push($links, $settings_link);
   return $links;
   }
-
 /**
  * 排队管理资源
  */
@@ -134,4 +134,5 @@ public function enqueue_admin_assets() {
   wp_enqueue_style('my-wp-plugin-admin-style', MY_PLUGIN_ASSETS_URL . 'css/admin-style.css');
   wp_enqueue_script('my-wp-plugin-admin-script', MY_PLUGIN_ASSETS_URL . 'js/admin.js', array('jquery'), '1.0', true);
   }
+}
 }
