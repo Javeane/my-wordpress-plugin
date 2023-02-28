@@ -650,25 +650,7 @@ function myplugin_social_login_test_script() {
         'ajaxUrl' => admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce( 'myplugin_social_login_test' )
     ) );
-}
-add_action( 'admin_enqueue_scripts', 'myplugin_social_login_test_script' );
 
-// 这里添加一个大括号
-{
-    jQuery( document ).ready( function() {
-        $( '#myplugin-social-login-test-button' ).on( 'click', function() {
-            var data = {
-                action: 'myplugin_social_login_test',
-                nonce: mypluginSocialLoginTest.nonce
-            };
-            $.post( mypluginSocialLoginTest.ajaxUrl, data, function( response ) {
-                $( '#myplugin-social-login-test-result' ).html( response );
-            } );
-        });
-    });
-}
-
-function myplugin_admin_enqueue_scripts() {
     wp_enqueue_script(
         'myplugin-admin-script',
         plugins_url( '/js/admin-script.js', dirname( __FILE__ ) ),
@@ -681,9 +663,7 @@ function myplugin_admin_enqueue_scripts() {
         'ajaxUrl' => admin_url( 'admin-ajax.php' )
     ) );
 }
-add_action( 'admin_enqueue_scripts', 'myplugin_admin_enqueue_scripts' );
-
-add_action( 'wp_ajax_myplugin_social_login_test', 'myplugin_social_login_test_request' );
+add_action( 'admin_enqueue_scripts', 'myplugin_social_login_test_script' );
 
 
 //第五部分
