@@ -653,17 +653,20 @@ function myplugin_social_login_test_script() {
 }
 add_action( 'admin_enqueue_scripts', 'myplugin_social_login_test_script' );
 
-jQuery( document ).ready( function( $ ) { // line 656
-    $( '#myplugin-social-login-test-button' ).on( 'click', function() {
-        var data = {
-            action: 'myplugin_social_login_test',
-            nonce: mypluginSocialLoginTest.nonce
-        };
-        $.post( mypluginSocialLoginTest.ajaxUrl, data, function( response ) {
-            $( '#myplugin-social-login-test-result' ).html( response );
-        } );
-    } );
-} );
+// 这里添加一个大括号
+{
+    jQuery( document ).ready( function( $ ) {
+        $( '#myplugin-social-login-test-button' ).on( 'click', function() {
+            var data = {
+                action: 'myplugin_social_login_test',
+                nonce: mypluginSocialLoginTest.nonce
+            };
+            $.post( mypluginSocialLoginTest.ajaxUrl, data, function( response ) {
+                $( '#myplugin-social-login-test-result' ).html( response );
+            } );
+        });
+    });
+}
 
 function myplugin_admin_enqueue_scripts() {
     wp_enqueue_script(
