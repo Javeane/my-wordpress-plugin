@@ -773,29 +773,45 @@ function myplugin_captcha_test_request() {
         ),
         'timeout' => 10
     );
-    $response = wp
-// Send test request
-$url = $endpoint . '/test';
-$response = wp_remote_get($url, array(
-'headers' => array(
-'Authorization' => 'Bearer ' . $key
-),
-'timeout' => 10
-));
-if (is_wp_error($response)) {
-    wp_send_json_error('Error: ' . $response->get_error_message());
-} else {
-    $response_code = wp_remote_retrieve_response_code($response);
-    if ($response_code == 200) {
-        wp_send_json_success('API test successful.');
+    $response = wp_remote_post($url, $args);
+
+    if (is_wp_error($response)) {
+        wp_send_json_error('Error: ' . $response->get_error_message());
     } else {
-        wp_send_json_error('Error: API test failed.');
+        $response_code = wp_remote_retrieve_response_code($response);
+        if ($response_code == 200) {
+            wp_send_json_success('API test successful.');
+        } else {
+            wp_send_json_error('Error: API test failed.');
+        }
     }
 }
-/**
 
+/**
+ * Handle social login test request
+ */
+function myplugin_social_login_test_request() {
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field($_POST['nonce']) : '';
+
+    // Verify nonce
+    if (!wp_verify_nonce($nonce, 'myplugin_social_login_test')) {
+        wp_send_json_error('Invalid request.');
+    }
+
+    // Get AJAX URL and nonce
+    $ajax_url = admin_url('admin-ajax.php');
+    $nonce = wp_create_nonce('myplugin_social_login_test');
+
+    wp_send_json_success(array(
+        'ajaxUrl' => $ajax_url,
+        'nonce' => $nonce
+    ));
+}
+
+/**
+ *
 Add captcha API settings to plugin settings page
-*/
+ */
 function myplugin_add_captcha_settings() {
 add_settings_section(
 'myplugin_captcha_section',
@@ -915,7 +931,6 @@ wp_send_json_error('Verification failed.');
 
 //第六部分
 
-<?php
 // Save and update plugin settings
 if (isset($_POST['my_plugin_save_settings'])) {
   $my_plugin_settings['smtp_host'] = sanitize_text_field($_POST['my_plugin_smtp_host']);
