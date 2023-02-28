@@ -300,7 +300,6 @@ function my_plugin_settings_page() {
 
 //第三部分
 
-<?php
 // 添加 SMTP 服务设置表单
 function myplugin_add_smtp_settings() {
   add_settings_section(
@@ -426,8 +425,6 @@ function myplugin_test_smtp_section_callback() {
   echo '<p>您可以通过下面的按钮来测试 SMTP 服务是否能够成功连接。</p>';
 }
 
-
-
 function myplugin_test_smtp_button_callback() {
   echo '<button id="myplugin_test_smtp_button" class="button">测试 SMTP 连接</button>';
 }
@@ -510,20 +507,30 @@ function myplugin_smtp_test_callback() {
     } else {
         echo 'Message sent!';
     }
-  function myplugin_add_settings_page() {
+//  function myplugin_add_settings_page() {
+//    add_options_page(
+//    ( 'MyPlugin SMTP Settings', 'myplugin' ),
+//    ( 'MyPlugin SMTP', 'myplugin' ),
+//    'manage_options',
+//    'myplugin-smtp-settings',
+//    'myplugin_render_smtp_settings_page'
+//    );
+//  }
+
+function myplugin_add_settings_page() {
     add_options_page(
-    ( 'MyPlugin SMTP Settings', 'myplugin' ),
-    ( 'MyPlugin SMTP', 'myplugin' ),
-    'manage_options',
-    'myplugin-smtp-settings',
-    'myplugin_render_smtp_settings_page'
+        'MyPlugin SMTP Settings', // 页面标题
+        'MyPlugin SMTP', // 菜单标题
+        'manage_options', // 用户权限
+        'myplugin-smtp-settings', // 菜单 slug
+        'myplugin_render_smtp_settings_page' // 渲染回调函数
     );
-  }  
+}
+
 }
 
 //第四部分
 
-<?php
 /**
  * Add social login API settings to plugin settings page
  */
@@ -646,7 +653,7 @@ function myplugin_social_login_test_script() {
 }
 add_action( 'admin_enqueue_scripts', 'myplugin_social_login_test_script' );
 
-jQuery( document ).ready( function( $ ) {
+jQuery( document ).ready( function( $ ) { // line 656
     $( '#myplugin-social-login-test-button' ).on( 'click', function() {
         var data = {
             action: 'myplugin_social_login_test',
@@ -658,7 +665,23 @@ jQuery( document ).ready( function( $ ) {
     } );
 } );
 
+function myplugin_admin_enqueue_scripts() {
+    wp_enqueue_script(
+        'myplugin-admin-script',
+        plugins_url( '/js/admin-script.js', dirname( __FILE__ ) ),
+        array( 'jquery' ),
+        MYPLUGIN_VERSION,
+        true
+    );
+    wp_localize_script( 'myplugin-admin-script', 'mypluginSocialLoginTest', array(
+        'nonce' => wp_create_nonce( 'myplugin_social_login_test' ),
+        'ajaxUrl' => admin_url( 'admin-ajax.php' )
+    ) );
+}
+add_action( 'admin_enqueue_scripts', 'myplugin_admin_enqueue_scripts' );
+
 add_action( 'wp_ajax_myplugin_social_login_test', 'myplugin_social_login_test_request' );
+
 
 //第五部分
 
