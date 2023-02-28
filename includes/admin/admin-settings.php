@@ -808,126 +808,6 @@ function myplugin_social_login_test_request() {
     ));
 }
 
-/**
- *
-Add captcha API settings to plugin settings page
- */
-function myplugin_add_captcha_settings() {
-add_settings_section(
-'myplugin_captcha_section',
-'Captcha API Settings',
-'myplugin_captcha_section_callback',
-'myplugin'
-);
-
-add_settings_field(
-'myplugin_captcha_api_endpoint',
-'API Endpoint URL',
-'myplugin_captcha_api_endpoint_callback',
-'myplugin',
-'myplugin_captcha_section'
-);
-
-add_settings_field(
-'myplugin_captcha_api_key',
-'API Key',
-'myplugin_captcha_api_key_callback',
-'myplugin',
-'myplugin_captcha_section'
-);
-
-register_setting('myplugin', 'myplugin_captcha_api_endpoint');
-register_setting('myplugin', 'myplugin_captcha_api_key');
-}
-
-/**
-
-Render captcha settings section description
-*/
-function myplugin_captcha_section_callback() {
-echo 'Configure the API settings for captcha.';
-}
-/**
-
-Render captcha API endpoint field
-*/
-function myplugin_captcha_api_endpoint_callback() {
-$value = get_option('myplugin_captcha_api_endpoint');
-echo '<input type="url" name="myplugin_captcha_api_endpoint" value="' . esc_attr($value) . '" />';
-}
-/**
-
-Render captcha API key field
-*/
-function myplugin_captcha_api_key_callback() {
-$value = get_option('myplugin_captcha_api_key');
-echo '<input type="text" name="myplugin_captcha_api_key" value="' . esc_attr($value) . '" />';
-}
-/**
-
-Add captcha API test button to plugin settings page
-*/
-function myplugin_add_captcha_test_button() {
-add_settings_field(
-'myplugin_captcha_test',
-'Test Captcha API',
-'myplugin_captcha_test_callback',
-'myplugin',
-'myplugin_captcha_section'
-);
-}
-/**
-
-Render captcha API test button
-*/
-function myplugin_captcha_test_callback() {
-echo '<button class="button" id="myplugin-captcha-test">Test</button>';
-}
-/**
-
-Handle captcha API test request
-*/
-function myplugin_captcha_test_request() {
-$nonce = isset($_POST['nonce']) ? sanitize_text_field($_POST['nonce']) : '';
-$secret_key = isset($_POST['secret_key']) ? sanitize_text_field($_POST['secret_key']) : '';
-
-// Verify nonce
-if (!wp_verify_nonce($nonce, 'myplugin_captcha_test') || empty($secret_key)) {
-wp_send_json_error('Invalid request.');
-}
-
-// Get API endpoint
-$endpoint = get_option('myplugin_captcha_api_endpoint');
-if (empty($endpoint)) {
-wp_send_json_error('Please enter the API endpoint URL.');
-}
-
-// Send test request
-$url = $endpoint . '/test';
-
-// Add query parameters
-$params = array(
-'secret' => $key,
-'response' => '1',
-);
-
-$url = add_query_arg($params, $url);
-
-// Send test request
-$response = wp_remote_get($url, array(
-'timeout' => 10
-));
-
-if (is_wp_error($response)) {
-wp_send_json_error('Error: ' . $response->get_error_message());
-} else {
-$body = json_decode($response['body'], true);
-if ($body['success']) {
-wp_send_json_success('Success!');
-} else {
-wp_send_json_error('Verification failed.');
-}
-}
 
 //第六部分
 
@@ -955,11 +835,9 @@ if (isset($_POST['my_plugin_save_settings'])) {
   update_option('my_plugin_settings', $my_plugin_settings);
   echo '<div class="notice notice-success is-dismissible"><p>'.__('Settings updated successfully.', 'my-plugin').'</p></div>';
 }
-?>
 
 //WordPress Settings API 调用
 
-<?php
 // 在 admin_menu 钩子中添加选项页面
 add_action( 'admin_menu', 'my_wp_plugin_settings_page' );
 function my_wp_plugin_settings_page() {
